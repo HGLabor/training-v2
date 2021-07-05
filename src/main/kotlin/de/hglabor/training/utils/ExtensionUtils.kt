@@ -76,7 +76,7 @@ fun String.col(vararg colorNames: String): String {
     return prefix + this + ChatColor.RESET.toString() + ChatColor.WHITE.toString()
 }
 
-fun colorFromName(name: String): ChatColor = ChatColor.valueOf(name.toUpperCase())
+fun colorFromName(name: String): ChatColor = ChatColor.valueOf(name.uppercase())
 
 fun Location.addY(y: Number) = this.clone().add(0, y, 0)
 
