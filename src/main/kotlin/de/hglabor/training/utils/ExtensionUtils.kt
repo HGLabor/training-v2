@@ -57,7 +57,7 @@ fun List<String>.materials(): List<Material> {
     return list
 }
 
-fun World.speedrunGameRules(): World {
+fun World.trainingGameRules(): World {
     time = 6000
     setGameRule(GameRule.ANNOUNCE_ADVANCEMENTS, false)
     setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false)

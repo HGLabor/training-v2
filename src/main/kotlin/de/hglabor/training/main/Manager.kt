@@ -1,9 +1,10 @@
 package de.hglabor.training.main
 
 import de.hglabor.training.config.Config
+import de.hglabor.training.utils.itemsListener
 import net.axay.kspigot.main.KSpigot
 
-val PLUGIN by lazy { InternalMainClass.INSTANCE }
+val Manager by lazy { InternalMainClass.INSTANCE }
 
 class InternalMainClass : KSpigot() {
     companion object {
@@ -16,6 +17,7 @@ class InternalMainClass : KSpigot() {
 
     override fun startup() {
         Config.load()
+        itemsListener()
     }
 
     override fun shutdown() {}

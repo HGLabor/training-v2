@@ -1,6 +1,6 @@
 package de.hglabor.training.config
 
-import de.hglabor.training.main.PLUGIN
+import de.hglabor.training.main.Manager
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 
@@ -11,22 +11,22 @@ enum class Config(private val path: String, value: Any) {
 
     ;
 
-    private val configValue: Any get() = PLUGIN.config.get(this.path) ?: this.mValue
+    private val configValue: Any get() = Manager.config.get(this.path) ?: this.mValue
     private var mValue: Any = value
 
     companion object {
         fun load() {
-            values().forEach { PLUGIN.config.addDefault(it.path, it.configValue) }
-            PLUGIN.config.options().copyDefaults(true)
-            PLUGIN.saveConfig()
+            values().forEach { Manager.config.addDefault(it.path, it.configValue) }
+            Manager.config.options().copyDefaults(true)
+            Manager.saveConfig()
         }
-        fun reload() { PLUGIN.reloadConfig() }
+        fun reload() { Manager.reloadConfig() }
     }
 
     fun set(value: Int) {
         mValue = value
-        PLUGIN.config.set(this.path, value)
-        PLUGIN.saveConfig()
+        Manager.config.set(this.path, value)
+        Manager.saveConfig()
     }
 
     fun getInt(): Int = this.configValue as Int
