@@ -1,6 +1,8 @@
 package de.hglabor.training.main
 
+import de.hglabor.training.challenge.challengeListener
 import de.hglabor.training.config.Config
+import de.hglabor.training.events.regionListener
 import de.hglabor.training.utils.itemsListener
 import net.axay.kspigot.main.KSpigot
 
@@ -18,6 +20,8 @@ class InternalMainClass : KSpigot() {
     override fun startup() {
         Config.load()
         itemsListener()
+        challengeListener()
+        regionListener()
     }
 
     override fun shutdown() {}

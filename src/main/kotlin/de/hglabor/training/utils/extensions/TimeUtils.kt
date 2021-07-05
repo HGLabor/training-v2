@@ -1,4 +1,4 @@
-package de.hglabor.training.utils
+package de.hglabor.training.utils.extensions
 
 import java.util.concurrent.TimeUnit
 

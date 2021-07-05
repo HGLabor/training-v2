@@ -1,5 +1,6 @@
 package de.hglabor.training.utils
 
+import de.hglabor.training.utils.extensions.clearInv
 import net.axay.kspigot.chat.KColors
 import net.axay.kspigot.items.itemStack
 import net.axay.kspigot.items.meta
