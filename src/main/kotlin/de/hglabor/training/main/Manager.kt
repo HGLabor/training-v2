@@ -1,6 +1,9 @@
 package de.hglabor.training.main
 
+import de.hglabor.training.challenge.CuboidChallenge
 import de.hglabor.training.challenge.challengeListener
+import de.hglabor.training.challenge.challenges
+import de.hglabor.training.challenge.registerChallenges
 import de.hglabor.training.config.Config
 import de.hglabor.training.events.regionListener
 import de.hglabor.training.utils.itemsListener
@@ -22,9 +25,14 @@ class InternalMainClass : KSpigot() {
         itemsListener()
         challengeListener()
         regionListener()
+        registerChallenges(CuboidChallenge("test"))
+        challenges.forEach { it.start() }
     }
 
-    override fun shutdown() {}
+    override fun shutdown() {
+        challenges.forEach { it.stop() }
+    }
+
 }
 
 

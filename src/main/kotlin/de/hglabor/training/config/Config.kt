@@ -1,11 +1,13 @@
 package de.hglabor.training.config
 
 import de.hglabor.training.main.Manager
+import net.axay.kspigot.extensions.server
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
+import org.bukkit.Location
 
 val PREFIX: String = "${ChatColor.DARK_GRAY}[${ChatColor.AQUA}Training${ChatColor.DARK_GRAY}]${ChatColor.WHITE}"
-val MAX_PLAYERS: Int = Bukkit.getServer().maxPlayers
+val MAX_PLAYERS: Int = server.maxPlayers
 
 enum class Config(private val path: String, value: Any) {
 
@@ -33,4 +35,5 @@ enum class Config(private val path: String, value: Any) {
     fun getBoolean(): Boolean = this.configValue as Boolean
     fun getString(): String = this.configValue as String
     @Suppress("UNCHECKED_CAST") fun getStringList(): ArrayList<String> = this.configValue as ArrayList<String>? ?: ArrayList()
+    @Suppress("UNCHECKED_CAST") fun getLocation()= this.configValue as Location
 }
