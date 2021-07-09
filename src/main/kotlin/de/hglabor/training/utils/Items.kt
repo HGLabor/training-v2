@@ -2,6 +2,7 @@ package de.hglabor.training.utils
 
 import de.hglabor.training.utils.extensions.clearInv
 import net.axay.kspigot.chat.KColors
+import net.axay.kspigot.extensions.bukkit.feedSaturate
 import net.axay.kspigot.items.itemStack
 import net.axay.kspigot.items.meta
 import net.axay.kspigot.items.name
@@ -24,6 +25,7 @@ val WARP_ITEMS = listOf(WARPS, HUB, RESPAWN_ANCHOR, SETTINGS)
 
 fun Player.renewInv() {
     clearInv()
+    feedSaturate()
     with(inventory) {
         setItem(0, WARPS)
         setItem(7, HUB)
