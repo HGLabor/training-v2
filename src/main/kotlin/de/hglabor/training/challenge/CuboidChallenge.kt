@@ -6,4 +6,6 @@ import de.hglabor.training.utils.extensions.we
 import de.hglabor.training.utils.extensions.world
 
 class CuboidChallenge(name: String) :
-    Challenge(name, CuboidRegion(world("world").we(), BlockVector3.at(4, 64,6), BlockVector3.at(10, 64, 12)))
+    Challenge(name, CuboidRegion(world("world").we(), BlockVector3.at(4, 64,6), BlockVector3.at(10, 64, 12))) {
+        val cuboidRegion get() = region as CuboidRegion
+    }

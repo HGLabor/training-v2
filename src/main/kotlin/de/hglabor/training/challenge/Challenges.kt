@@ -6,6 +6,8 @@ import de.hglabor.training.utils.extensions.call
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.HashSet
 
 val challenges = HashSet<Challenge>()
 
@@ -14,6 +16,19 @@ private fun HashSet<Challenge>.getForPlayer(player: Player): Challenge? {
         if (it.players.contains(player.uniqueId)) return it
     }
     return null
+}
+
+fun challenge(name: String): Challenge? {
+    challenges.forEach {
+        if (it.name == name) return it
+    }
+    return null
+}
+
+val challengeNames: List<String> get() = run {
+    val names = ArrayList<String>()
+    challenges.forEach { names.add(it.name) }
+    return names
 }
 
 fun registerChallenges(vararg toRegister: Challenge) = challenges.addAll(toRegister)

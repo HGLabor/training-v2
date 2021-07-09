@@ -15,7 +15,7 @@ fun namedItem(material: Material, name: String): ItemStack {
     }
 }
 
-val WARPS = namedItem(Material.NETHER_STAR, "${KColors.GOLD}${KColors.BOLD}Warps")
+val WARPS = namedItem(Material.NETHER_STAR, "${KColors.AQUA}${KColors.BOLD}Warps")
 val HUB = namedItem(Material.HEART_OF_THE_SEA, "${KColors.GOLD}${KColors.BOLD}Hub")
 val RESPAWN_ANCHOR = namedItem(Material.RESPAWN_ANCHOR,"${KColors.GREEN}Left click = new spawn ${KColors.RESET}| ${KColors.YELLOW}Right click = reset")
 val SETTINGS = namedItem(Material.COMPARATOR,"${KColors.GRAY}${KColors.BOLD}Settings")

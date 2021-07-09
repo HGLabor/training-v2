@@ -14,11 +14,11 @@ import org.bukkit.event.player.PlayerMoveEvent
 
 fun regionListener() {
     listen<PlayerMoveEvent> { event -> with(event) {
-        if (to?.distanceSquared(from) != 0.0) processPlayerMove(event)
+        if (to?.distanceSquared(from) != 0.0) processPlayerMove(player)
     }}
 }
 
-fun processPlayerMove(event: PlayerMoveEvent) = with(event) {
+fun processPlayerMove(player: Player) {
     val pChallenge = player.challenge
     if (!(player inRegion pChallenge)) player.challenge = null
     challenges.forEach {

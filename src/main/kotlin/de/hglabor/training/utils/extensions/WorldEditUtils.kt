@@ -2,6 +2,7 @@ package de.hglabor.training.utils.extensions
 
 import com.sk89q.worldedit.bukkit.BukkitWorld
 import com.sk89q.worldedit.math.BlockVector3
+import com.sk89q.worldedit.regions.Region
 import de.hglabor.training.challenge.Challenge
 import org.bukkit.Location
 import org.bukkit.World
