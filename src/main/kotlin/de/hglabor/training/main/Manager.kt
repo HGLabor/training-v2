@@ -1,6 +1,7 @@
 package de.hglabor.training.main
 
 import de.hglabor.training.challenge.*
+import de.hglabor.training.challenge.damager.Damager
 import de.hglabor.training.commands.commands
 import de.hglabor.training.config.Config
 import de.hglabor.training.events.updatePlayerChallenge
@@ -36,7 +37,7 @@ class InternalMainClass : KSpigot() {
         itemsListener()
         challengeListener()
         regionListener()
-        registerChallenges(CuboidChallenge("test"))
+        registerChallenges(Damager("test"))
         commands()
         challenges.forEach { it.start() }
 

@@ -61,7 +61,11 @@ fun itemsListener() {
         when (item) {
             WARPS -> if (isRightClick) player.sendMessage("warps") // TODO open warps gui
             HUB -> if (isRightClick) player.sendMessage("hub") // TODO send player to lobby
-            RESPAWN_ANCHOR -> player.sendMessage("respawn anchor") // TODO set respawn point
+            RESPAWN_ANCHOR -> {
+                // TODO set/reset respawn point
+                if (isRightClick) player.sendMessage("respawn anchor right click")
+                else if (isLeftClick) player.sendMessage("respawn anchor left click")
+            }
         }
     }}
     listen<PlayerDropItemEvent> { with(it) {
@@ -70,3 +74,4 @@ fun itemsListener() {
 }
 
 private val PlayerInteractEvent.isRightClick get() = action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK
+private val PlayerInteractEvent.isLeftClick get() = action == Action.LEFT_CLICK_AIR || action == Action.LEFT_CLICK_BLOCK
