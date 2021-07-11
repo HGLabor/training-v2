@@ -28,7 +28,8 @@ fun commands() {
                                     val challenge = challenge(it.getArgument("name"))
                                     val player = it.source.player
                                     if (challenge !is CuboidChallenge) {
-                                        player.sendMessage("$PREFIX ${KColors.RED}Challenge region is not cuboid.")
+                                        if (challenge != null) player.sendMessage("$PREFIX ${KColors.RED}Challenge region is not cuboid.")
+                                        else player.sendMessage("$PREFIX ${KColors.RED}Challenge not found.")
                                         return@simpleExecutes
                                     }
                                     if (pos == "pos1") challenge.cuboidRegion.pos1 = player.location.we()
