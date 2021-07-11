@@ -31,8 +31,6 @@ dependencies {
     compileOnly("com.intellectualsites.fawe:FAWE-Bukkit:1.16-637")
     // KSPIGOT
     implementation("net.axay:kspigot:1.17.2")
-    // HGLabor Utils
-    implementation("de.hglabor:hglabor-utils:0.0.6")
     // CloudNet
     compileOnly("de.dytanic.cloudnet", "cloudnet-bridge", "3.3.0-RELEASE")
 }

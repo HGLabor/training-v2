@@ -5,7 +5,7 @@ import de.hglabor.training.challenge.CuboidChallenge
 import de.hglabor.training.challenge.challenge
 import de.hglabor.training.challenge.challengeNames
 import de.hglabor.training.config.PREFIX
-import de.hglabor.training.events.updatePlayerChallenge
+import de.hglabor.training.events.updateChallenge
 import de.hglabor.training.utils.extensions.onlinePlayers
 import de.hglabor.training.utils.extensions.we
 import net.axay.kspigot.chat.KColors
@@ -34,7 +34,8 @@ fun commands() {
                                     if (pos == "pos1") challenge.cuboidRegion.pos1 = player.location.we()
                                     else if (pos == "pos2") challenge.cuboidRegion.pos2 = player.location.we()
                                     player.sendMessage("$PREFIX ${KColors.GREEN}Set $pos of challenge ${KColors.GRAY}${challenge.name} ${KColors.GREEN}to your current position.")
-                                    onlinePlayers { p -> updatePlayerChallenge(p) }
+                                    onlinePlayers { updateChallenge() }
+                                    challenge.restart()
                                 }
                             }
                         }

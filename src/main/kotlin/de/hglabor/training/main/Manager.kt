@@ -4,8 +4,8 @@ import de.hglabor.training.challenge.*
 import de.hglabor.training.challenge.damager.Damager
 import de.hglabor.training.commands.commands
 import de.hglabor.training.config.Config
-import de.hglabor.training.events.updatePlayerChallenge
 import de.hglabor.training.events.regionListener
+import de.hglabor.training.events.updateChallenge
 import de.hglabor.training.utils.extensions.cancel
 import de.hglabor.training.utils.extensions.isCreative
 import de.hglabor.training.utils.itemsListener
@@ -13,6 +13,7 @@ import de.hglabor.training.utils.renewInv
 import net.axay.kspigot.event.listen
 import net.axay.kspigot.main.KSpigot
 import org.bukkit.GameMode
+import org.bukkit.entity.Player
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.entity.FoodLevelChangeEvent
@@ -37,7 +38,7 @@ class InternalMainClass : KSpigot() {
         itemsListener()
         challengeListener()
         regionListener()
-        registerChallenges(Damager("test"))
+        registerChallenges(Damager("easy"))
         commands()
         challenges.forEach { it.start() }
 
@@ -47,7 +48,7 @@ class InternalMainClass : KSpigot() {
             joinMessage = null
             player.renewInv()
             player.teleport(player.location.world!!.spawnLocation)
-            updatePlayerChallenge(player)
+            player.updateChallenge()
         }}
 
         listen<PlayerQuitEvent> { with(it) {
@@ -56,7 +57,7 @@ class InternalMainClass : KSpigot() {
         }}
 
         listen<FoodLevelChangeEvent> { with(it) {
-            cancel()
+            if ((entity as Player).challenge?.hunger != true) cancel()
         }}
 
         listen<BlockBreakEvent> { with (it) {
@@ -74,7 +75,7 @@ class InternalMainClass : KSpigot() {
         listen<PlayerGameModeChangeEvent> { with(it) {
             when (newGameMode) {
                 // Update player challenge if in survival
-                GameMode.SURVIVAL -> updatePlayerChallenge(player)
+                GameMode.SURVIVAL -> player.updateChallenge()
                 // Leave challenge if in not in survival
                 else -> player.challenge = null
             }

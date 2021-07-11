@@ -13,16 +13,16 @@ import org.bukkit.event.player.PlayerMoveEvent
 
 fun regionListener() {
     listen<PlayerMoveEvent> { event -> with(event) {
-        if (player.gameMode == GameMode.SURVIVAL && to?.distanceSquared(from) != 0.0) updatePlayerChallenge(player)
+        if (player.gameMode == GameMode.SURVIVAL && to?.distanceSquared(from) != 0.0) player.updateChallenge()
     }}
 }
 
-fun updatePlayerChallenge(player: Player) {
-    val pChallenge = player.challenge
-    if (!(player inRegion pChallenge)) player.challenge = null
+fun Player.updateChallenge() {
+    val pChallenge = challenge
+    if (!(this inRegion pChallenge)) challenge = null
     challenges.forEach {
-        if (player notInChallenge it && player inRegion it) {
-            player.challenge = it
+        if (this notInChallenge it && this inRegion it) {
+            challenge = it
         }
     }
 }

@@ -11,7 +11,7 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
 
-inline fun onlinePlayers(block: (Player) -> Unit) = net.axay.kspigot.extensions.onlinePlayers.forEach(block)
+inline fun onlinePlayers(block: Player.() -> Unit) = net.axay.kspigot.extensions.onlinePlayers.forEach(block)
 
 fun Entity.isCreative(): Boolean = this is Player && this.gameMode == GameMode.CREATIVE
 

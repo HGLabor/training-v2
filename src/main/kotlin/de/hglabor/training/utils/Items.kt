@@ -1,5 +1,6 @@
 package de.hglabor.training.utils
 
+import de.hglabor.training.challenge.challenge
 import de.hglabor.training.utils.extensions.cancel
 import de.hglabor.training.utils.extensions.clearInv
 import net.axay.kspigot.chat.KColors
@@ -35,7 +36,8 @@ val LOCATIONS =  listOf(0,     7,   8,              17)
 fun Player.renewInv() {
     clearInv()
     feedSaturate()
-    LOCATIONS.forEachIndexed { index, location -> inventory.setItem(location, WARP_ITEMS[index]) }
+    health = healthScale
+    if (challenge?.warpItems != false) LOCATIONS.forEachIndexed { index, location -> inventory.setItem(location, WARP_ITEMS[index]) }
 }
 
 fun ItemStack?.isWarpItem() = WARP_ITEMS.any { this?.isSimilar(it) ?: return@any false }

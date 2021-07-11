@@ -10,19 +10,22 @@ import net.axay.kspigot.chat.KColors
 import net.axay.kspigot.event.listen
 import net.axay.kspigot.extensions.broadcast
 import net.axay.kspigot.extensions.bukkit.actionBar
+import net.md_5.bungee.api.ChatColor
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.event.Event
 import org.bukkit.event.player.PlayerEvent
 import java.util.*
 
-abstract class Challenge(val name: String, val region: Region) {
+abstract class Challenge(val name: String, val region: Region, val color: ChatColor = KColors.WHITE) {
     val players = HashSet<UUID>()
-    inline fun players(forEach: (Player) -> Unit) {
+    inline fun players(forEach: Player.() -> Unit) {
         players.forEach { forEach(Bukkit.getPlayer(it)!!) }
     }
     open fun start() {}
     open fun stop() {}
+
+    fun restart() { stop(); start() }
 
     internal fun enter(player: Player) {
         players.add(player.uniqueId)
@@ -47,11 +50,14 @@ abstract class Challenge(val name: String, val region: Region) {
      * Executes the given [callback] if the player of the
      * [Event] is in this challenge.
      */
-    inline fun <reified T : Event> challengePlayerEvent(crossinline callback: (event: T) -> Unit) {
+    inline fun <reified T : Event> challengePlayerEvent(crossinline callback: T.() -> Unit) {
         listen<T> {
             if (it.reflectMethod<Player>("getPlayer").challenge == this) callback.invoke(it)
         }
     }
+
+    open val hunger = false
+    open val warpItems = true
 }
 
 fun challengeListener() {
