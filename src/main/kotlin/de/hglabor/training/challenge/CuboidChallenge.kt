@@ -8,11 +8,11 @@ import de.hglabor.training.utils.extensions.world
 import org.bukkit.Location
 import org.bukkit.World
 
-private val pos = listOf(Location(null, 4.0, 64.0, 6.0), null, 10.0, 65.0, 12.0)
+private val defaultPos = listOf(Location(null, 4.0, 64.0, 6.0), Location(null, 10.0, 65.0, 12.0))
 
 private fun pos(name: String, number: Int): Location? { with(Manager.config) {
     val path = "challenge.$name.region.pos$number"
-    addDefault(path, pos[number-1])
+    addDefault(path, defaultPos[number-1])
     Manager.saveConfig()
     return getLocation(path)
 }}
