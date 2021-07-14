@@ -4,7 +4,7 @@ group = "de.hglabor"
 version = "1.0-SNAPSHOT"
 
 plugins {
-    kotlin("jvm") version "1.5.10"
+    kotlin("jvm") version "1.5.21"
 }
 
 repositories {
