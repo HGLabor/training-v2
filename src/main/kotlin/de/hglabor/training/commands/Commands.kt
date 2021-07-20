@@ -3,13 +3,13 @@ package de.hglabor.training.commands
 import com.mojang.brigadier.arguments.IntegerArgumentType
 import com.mojang.brigadier.arguments.StringArgumentType
 import de.hglabor.training.challenge.CuboidChallenge
+import de.hglabor.training.challenge.CylinderChallenge
 import de.hglabor.training.challenge.challenge
 import de.hglabor.training.challenge.challengeNames
-import de.hglabor.training.challenge.CylinderChallenge
 import de.hglabor.training.config.PREFIX
 import de.hglabor.training.events.updateChallenge
-import de.hglabor.training.utils.extensions.onlinePlayers
 import de.hglabor.training.utils.extensions.bv2
+import de.hglabor.training.utils.extensions.onlinePlayers
 import de.hglabor.training.utils.extensions.we
 import net.axay.kspigot.chat.KColors
 import net.axay.kspigot.commands.*

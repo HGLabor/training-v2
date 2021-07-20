@@ -2,7 +2,6 @@ package de.hglabor.training.config
 
 import de.hglabor.training.main.Manager
 import net.axay.kspigot.extensions.server
-import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.Location
 

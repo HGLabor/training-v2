@@ -1,7 +1,6 @@
 package de.hglabor.training.challenge
 
 import com.sk89q.worldedit.regions.CylinderRegion
-import de.hglabor.training.challenge.Challenge
 import de.hglabor.training.main.Manager
 import de.hglabor.training.utils.extensions.world
 import org.bukkit.World

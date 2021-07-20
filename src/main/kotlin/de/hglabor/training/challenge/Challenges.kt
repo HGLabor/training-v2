@@ -3,11 +3,7 @@ package de.hglabor.training.challenge
 import de.hglabor.training.events.ChallengeEnterEvent
 import de.hglabor.training.events.ChallengeLeaveEvent
 import de.hglabor.training.utils.extensions.call
-import org.bukkit.Bukkit
 import org.bukkit.entity.Player
-import java.util.*
-import kotlin.collections.ArrayList
-import kotlin.collections.HashSet
 
 val challenges = HashSet<Challenge>()
 

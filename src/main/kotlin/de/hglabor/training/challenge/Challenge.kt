@@ -4,18 +4,15 @@ import com.sk89q.worldedit.regions.Region
 import de.hglabor.training.events.ChallengeEnterEvent
 import de.hglabor.training.events.ChallengeLeaveEvent
 import de.hglabor.training.utils.extensions.reflectMethod
-import de.hglabor.training.utils.logger
 import de.hglabor.training.utils.renewInv
 import net.axay.kspigot.chat.KColors
 import net.axay.kspigot.event.listen
-import net.axay.kspigot.extensions.broadcast
 import net.axay.kspigot.extensions.bukkit.actionBar
 import net.md_5.bungee.api.ChatColor
 import org.bukkit.Bukkit
 import org.bukkit.World
 import org.bukkit.entity.Player
 import org.bukkit.event.Event
-import org.bukkit.event.player.PlayerEvent
 import java.util.*
 
 abstract class Challenge(val name: String, val world: World, val region: Region, val color: ChatColor = KColors.WHITE) {

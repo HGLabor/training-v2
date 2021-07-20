@@ -1,7 +1,10 @@
 package de.hglabor.training.main
 
-import de.hglabor.training.challenge.*
+import de.hglabor.training.challenge.challenge
+import de.hglabor.training.challenge.challengeListener
+import de.hglabor.training.challenge.challenges
 import de.hglabor.training.challenge.damager.Damager
+import de.hglabor.training.challenge.registerChallenges
 import de.hglabor.training.commands.commands
 import de.hglabor.training.config.Config
 import de.hglabor.training.events.regionListener
