@@ -1,6 +1,7 @@
 package de.hglabor.training.utils
 
 import de.hglabor.training.challenge.challenge
+import de.hglabor.training.guis.openWarpsGUI
 import de.hglabor.training.utils.extensions.cancel
 import de.hglabor.training.utils.extensions.clearInv
 import net.axay.kspigot.chat.KColors
@@ -61,7 +62,7 @@ fun itemsListener() {
         cancel()
         if (it is PlayerInteractAtEntityEvent || hand == EquipmentSlot.OFF_HAND) return@listen
         when (item) {
-            WARPS -> if (isRightClick) player.sendMessage("warps") // TODO open warps gui
+            WARPS -> if (isRightClick) player.openWarpsGUI()
             HUB -> if (isRightClick) player.sendMessage("hub") // TODO send player to lobby
             RESPAWN_ANCHOR -> {
                 // TODO set/reset respawn point

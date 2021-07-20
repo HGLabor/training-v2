@@ -12,7 +12,9 @@ import de.hglabor.training.utils.itemsListener
 import de.hglabor.training.utils.renewInv
 import net.axay.kspigot.event.listen
 import net.axay.kspigot.main.KSpigot
+import org.bukkit.Bukkit
 import org.bukkit.GameMode
+import org.bukkit.WorldCreator
 import org.bukkit.entity.Player
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockPlaceEvent
@@ -43,6 +45,8 @@ class InternalMainClass : KSpigot() {
         challenges.forEach { it.start() }
 
         config.options().copyDefaults(true)
+
+        Bukkit.createWorld(WorldCreator("mlg"))
 
         listen<PlayerJoinEvent> { with(it) {
             joinMessage = null

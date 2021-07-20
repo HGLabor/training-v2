@@ -17,8 +17,8 @@ private fun pos(name: String, number: Int): Location? { with(Manager.config) {
     return getLocation(path)
 }}
 
-open class CuboidChallenge(name: String, protected val world: World = world("world")!!) :
-    Challenge(name, CuboidRegion(
+open class CuboidChallenge(name: String, world: World = world("world")!!) :
+    Challenge(name, world, CuboidRegion(
         world.we(),
         pos(name, 1)!!.we(),
         pos(name, 2)!!.we(),

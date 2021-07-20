@@ -12,12 +12,13 @@ import net.axay.kspigot.extensions.broadcast
 import net.axay.kspigot.extensions.bukkit.actionBar
 import net.md_5.bungee.api.ChatColor
 import org.bukkit.Bukkit
+import org.bukkit.World
 import org.bukkit.entity.Player
 import org.bukkit.event.Event
 import org.bukkit.event.player.PlayerEvent
 import java.util.*
 
-abstract class Challenge(val name: String, val region: Region, val color: ChatColor = KColors.WHITE) {
+abstract class Challenge(val name: String, val world: World, val region: Region, val color: ChatColor = KColors.WHITE) {
     val players = HashSet<UUID>()
     inline fun players(forEach: Player.() -> Unit) {
         players.forEach { forEach(Bukkit.getPlayer(it)!!) }
@@ -27,10 +28,11 @@ abstract class Challenge(val name: String, val region: Region, val color: ChatCo
 
     fun restart() { stop(); start() }
 
+    open val displayName = name
     internal fun enter(player: Player) {
         players.add(player.uniqueId)
         player.renewInv()
-        player.actionBar("${KColors.GREEN}You entered $name")
+        player.actionBar("${KColors.GREEN}You entered $displayName")
         onEnter(player)
     }
     protected open fun onEnter(player: Player) {}
@@ -38,11 +40,11 @@ abstract class Challenge(val name: String, val region: Region, val color: ChatCo
     internal fun leave(player: Player) {
         players.remove(player.uniqueId)
         player.renewInv()
-        player.actionBar("${KColors.RED}You left $name")
+        player.actionBar("${KColors.RED}You left $displayName")
         onLeave(player)
     }
 
-    override fun toString(): String = "$name Challenge [center={${region.center.x},${region.center.y},${region.center.z}}]"
+    override fun toString(): String = "$displayName[center={${region.center.x},${region.center.y},${region.center.z}}]"
 
     protected open fun onLeave(player: Player) {}
 
