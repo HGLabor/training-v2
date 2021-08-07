@@ -9,11 +9,18 @@ import net.axay.kspigot.extensions.geometry.add
 import net.axay.kspigot.runnables.KSpigotRunnable
 import net.axay.kspigot.runnables.task
 import org.bukkit.entity.Player
+import org.bukkit.event.entity.EntityDamageEvent
 
 class Damager(name: String, private val period: Long = 20L, private var damage: Double = 2.0) : CuboidChallenge(name) {
     var task: KSpigotRunnable? = null
     var hologram: Hologram? = null
     override val displayName get() = "$name Damager"
+
+    init {
+        challengePlayerEvent<EntityDamageEvent> {
+
+        }
+    }
 
     override fun start() {
         val holoLoc = cuboidRegion.center.bukkit().clone().add(0, 2, 0)

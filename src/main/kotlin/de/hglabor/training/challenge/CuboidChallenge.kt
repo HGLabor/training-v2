@@ -23,9 +23,6 @@ open class CuboidChallenge(name: String, world: World = world("world")!!) :
         pos(name, 1)!!.we(),
         pos(name, 2)!!.we(),
     )) {
-    init {
-        Manager.saveConfig()
-    }
     val cuboidRegion get() = region as CuboidRegion
 
     override fun stop() { with(Manager.config) {

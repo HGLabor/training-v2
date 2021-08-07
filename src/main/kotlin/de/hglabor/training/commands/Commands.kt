@@ -6,6 +6,7 @@ import de.hglabor.training.challenge.CuboidChallenge
 import de.hglabor.training.challenge.CylinderChallenge
 import de.hglabor.training.challenge.challenge
 import de.hglabor.training.challenge.challengeNames
+import de.hglabor.training.config.Config
 import de.hglabor.training.config.PREFIX
 import de.hglabor.training.events.updateChallenge
 import de.hglabor.training.utils.extensions.bv2
@@ -17,6 +18,12 @@ import net.axay.kspigot.extensions.bukkit.actionBar
 
 fun commands() {
     command("training") {
+        literal("reload") {
+            simpleExecutes {
+                Config.reload()
+                it.source.player.sendMessage("$PREFIX Reloaded config")
+            }
+        }
         literal("challenge") {
             simpleExecutes {
                 it.source.player.actionBar("${KColors.RED}Specify a challenge")
@@ -55,6 +62,7 @@ fun commands() {
                                 }
                                 challenge.cylinderRegion.setCenter(player.location.bv2())
                                 player.sendMessage("$PREFIX ${KColors.GREEN}Set center of challenge ${KColors.GRAY}${challenge.name} ${KColors.GREEN}to your current position.")
+                                challenge.restart()
                                 onlinePlayers { updateChallenge() }
                             }
                         }

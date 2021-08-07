@@ -13,6 +13,7 @@ import org.bukkit.Bukkit
 import org.bukkit.World
 import org.bukkit.entity.Player
 import org.bukkit.event.Event
+import org.bukkit.event.entity.EntityEvent
 import java.util.*
 
 abstract class Challenge(val name: String, val world: World, val region: Region, val color: ChatColor = KColors.WHITE) {
@@ -51,7 +52,7 @@ abstract class Challenge(val name: String, val world: World, val region: Region,
      */
     inline fun <reified T : Event> challengePlayerEvent(crossinline callback: T.() -> Unit) {
         listen<T> {
-            if (it.reflectMethod<Player>("getPlayer").challenge == this) callback.invoke(it)
+            if (it.reflectMethod<Player>("getPlayer")?.challenge ?: (it as EntityEvent).entity is Player &&  ((it as EntityEvent).entity as Player).challenge == this) callback.invoke(it)
         }
     }
 
