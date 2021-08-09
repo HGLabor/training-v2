@@ -6,9 +6,11 @@ import de.hglabor.training.commands.commands
 import de.hglabor.training.config.Config
 import de.hglabor.training.events.regionListener
 import de.hglabor.training.events.updateChallenge
+import de.hglabor.training.events.updateChallengeIfSurvival
 import de.hglabor.training.utils.extensions.cancel
 import de.hglabor.training.utils.extensions.isCreative
 import de.hglabor.training.utils.extensions.trainingGameRules
+import de.hglabor.training.utils.extensions.world
 import de.hglabor.training.utils.itemsListener
 import de.hglabor.training.utils.renewInv
 import net.axay.kspigot.event.listen
@@ -38,6 +40,7 @@ class InternalMainClass : KSpigot() {
 
     override fun startup() {
         Bukkit.createWorld(WorldCreator("mlg"))?.trainingGameRules() ?: throw RuntimeException("mlg World could not be created.")
+        world("world")!!.trainingGameRules()
 
         Config.load()
 
@@ -54,7 +57,7 @@ class InternalMainClass : KSpigot() {
             joinMessage = null
             player.renewInv()
             player.teleport(player.location.world!!.spawnLocation)
-            player.updateChallenge()
+            player.updateChallengeIfSurvival()
         }}
 
         listen<PlayerQuitEvent> { with(it) {

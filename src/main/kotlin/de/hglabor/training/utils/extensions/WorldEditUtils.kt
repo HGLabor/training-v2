@@ -1,5 +1,6 @@
 package de.hglabor.training.utils.extensions
 
+import com.sk89q.worldedit.EditSession
 import com.sk89q.worldedit.WorldEdit
 import com.sk89q.worldedit.bukkit.BukkitAdapter
 import com.sk89q.worldedit.bukkit.BukkitWorld
@@ -29,10 +30,14 @@ infix fun Player.inRegion(challenge: Challenge?) = challenge?.world == world && 
 
 val worldEdit: WorldEdit get() = WorldEdit.getInstance()
 
+/** Create a new `EditSession` and then flush the queue after running the `block` */
 @Suppress("DEPRECATION")
-fun cylinder(world: World, region: CylinderRegion, material: Material, filled: Boolean = true, firstAir: Boolean = false) {
-    val session = worldEdit.editSessionFactory.getEditSession(world.we(), 1000000)
-    if (firstAir) session.makeCylinder(region.center.toBlockPoint(), Material.AIR.defaultPattern(), region.radius.x, region.radius.z, region.height, true)
-    session.makeCylinder(region.center.toBlockPoint(), material.defaultPattern(), region.radius.x, region.radius.z, region.height, filled)
-    session.flushQueue()
+inline fun WorldEdit.editSession(world: World, maxBlocks: Int = -1, block: EditSession.() -> Unit) = editSessionFactory.getEditSession(world.we(), maxBlocks).apply(block).flushQueue()
+
+fun EditSession.cylinder(region: CylinderRegion, material: Material, filled: Boolean = true, firstAir: Boolean = false, height: Int = region.height) {
+    if (firstAir) makeCylinder(region.center.toBlockPoint(), Material.AIR.defaultPattern(), region.radius.x, region.radius.z, height, true)
+    makeCylinder(region.center.toBlockPoint(), material.defaultPattern(), region.radius.x, region.radius.z, height, filled)
 }
+
+val CylinderRegion.floor get() = clone().apply { maximumY = minimumY }
+val CylinderRegion.ceiling get() = clone().apply { minimumY = maximumY }

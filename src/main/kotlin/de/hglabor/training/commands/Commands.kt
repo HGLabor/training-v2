@@ -1,14 +1,14 @@
 package de.hglabor.training.commands
 
 import com.mojang.brigadier.arguments.IntegerArgumentType
-import com.mojang.brigadier.arguments.StringArgumentType
+import de.hglabor.training.challenge.Challenge
 import de.hglabor.training.challenge.CuboidChallenge
 import de.hglabor.training.challenge.CylinderChallenge
-import de.hglabor.training.challenge.challenge
-import de.hglabor.training.challenge.challengeNames
+import de.hglabor.training.challenge.challenges
 import de.hglabor.training.config.Config
 import de.hglabor.training.config.PREFIX
 import de.hglabor.training.events.updateChallenge
+import de.hglabor.training.events.updateChallengeIfSurvival
 import de.hglabor.training.utils.extensions.bv2
 import de.hglabor.training.utils.extensions.onlinePlayers
 import de.hglabor.training.utils.extensions.we
@@ -22,53 +22,47 @@ fun commands() {
             simpleExecutes {
                 Config.reload()
                 it.source.player.sendMessage("$PREFIX Reloaded config")
+                challenges.forEach(Challenge::restart)
             }
         }
         literal("challenge") {
             simpleExecutes {
                 it.source.player.actionBar("${KColors.RED}Specify a challenge")
             }
-            argument("name", StringArgumentType.string()) {
-                simpleSuggests { challengeNames }
-                literal("region") {
-                    literal("set") {
-                        arrayOf("pos1", "pos2").forEach { pos ->
-                            literal(pos) {
-                                simpleExecutes {
-                                    val challenge = challenge(it.getArgument("name"))
-                                    val player = it.source.player
-                                    if (challenge !is CuboidChallenge) {
-                                        if (challenge != null) player.sendMessage("$PREFIX ${KColors.RED}Challenge region is not cuboid.")
-                                        else player.sendMessage("$PREFIX ${KColors.RED}Challenge not found.")
-                                        return@simpleExecutes
+            challenges.forEach { challenge ->
+                literal(challenge.name) {
+                    literal("region") {
+                        literal("set") {
+                            if (challenge is CuboidChallenge) {
+                                arrayOf("pos1", "pos2").forEach { pos ->
+                                    literal(pos) {
+                                        simpleExecutes {
+                                            val player = it.source.player
+                                            if (pos == "pos1") challenge.cuboidRegion.pos1 = player.location.we()
+                                            else if (pos == "pos2") challenge.cuboidRegion.pos2 =
+                                                player.location.we()
+                                            player.sendMessage("$PREFIX ${KColors.GREEN}Set $pos of challenge ${KColors.GRAY}${challenge.name} ${KColors.GREEN}to your current position.")
+                                            onlinePlayers { updateChallenge() }
+                                            challenge.restart()
+                                        }
                                     }
-                                    if (pos == "pos1") challenge.cuboidRegion.pos1 = player.location.we()
-                                    else if (pos == "pos2") challenge.cuboidRegion.pos2 = player.location.we()
-                                    player.sendMessage("$PREFIX ${KColors.GREEN}Set $pos of challenge ${KColors.GRAY}${challenge.name} ${KColors.GREEN}to your current position.")
-                                    onlinePlayers { updateChallenge() }
-                                    challenge.restart()
                                 }
                             }
-                        }
-                        // TODO center, radius
-                        literal("center") {
-                            simpleExecutes {
-                                val challenge = challenge(it.getArgument("name"))
-                                val player = it.source.player
-                                if (challenge !is CylinderChallenge) {
-                                    if (challenge != null) player.sendMessage("$PREFIX ${KColors.RED}Challenge region is not cylinder.")
-                                    else player.sendMessage("$PREFIX ${KColors.RED}Challenge not found.")
-                                    return@simpleExecutes
+                            else if (challenge is CylinderChallenge) {
+                                literal("center") {
+                                    simpleExecutes {
+                                        val player = it.source.player
+                                        challenge.cylinderRegion.setCenter(player.location.bv2())
+                                        player.sendMessage("$PREFIX ${KColors.GREEN}Set center of challenge ${KColors.GRAY}${challenge.name} ${KColors.GREEN}to your current position.")
+                                        challenge.restart()
+                                        onlinePlayers { updateChallengeIfSurvival() }
+                                    }
                                 }
-                                challenge.cylinderRegion.setCenter(player.location.bv2())
-                                player.sendMessage("$PREFIX ${KColors.GREEN}Set center of challenge ${KColors.GRAY}${challenge.name} ${KColors.GREEN}to your current position.")
-                                challenge.restart()
-                                onlinePlayers { updateChallenge() }
-                            }
-                        }
-                        literal("radius") {
-                            argument("radius", IntegerArgumentType.integer(1)) {
-                                
+                                literal("radius") {
+                                    argument("radius", IntegerArgumentType.integer(1)) {
+
+                                    }
+                                }
                             }
                         }
                     }
