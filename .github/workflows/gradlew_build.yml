@@ -28,7 +28,7 @@ jobs:
       run: wget https://hub.spigotmc.org/jenkins/job/BuildTools/lastSuccessfulBuild/artifact/target/BuildTools.jar
     
     - name: Compile Craftbukkit
-      run: java -jar BuildTools.jar --rev latest --compile CRAFTBUKKIT
+      run: java -jar BuildTools.jar --rev 1.17 --compile CRAFTBUKKIT
     
     - name: Build
       run: ./gradlew build
