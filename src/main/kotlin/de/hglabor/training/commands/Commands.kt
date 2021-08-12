@@ -9,15 +9,21 @@ import de.hglabor.training.config.Config
 import de.hglabor.training.config.PREFIX
 import de.hglabor.training.events.updateChallenge
 import de.hglabor.training.events.updateChallengeIfSurvival
+import de.hglabor.training.main.Manager
 import de.hglabor.training.utils.extensions.bv2
+import de.hglabor.training.utils.extensions.col
 import de.hglabor.training.utils.extensions.onlinePlayers
 import de.hglabor.training.utils.extensions.we
 import net.axay.kspigot.chat.KColors
 import net.axay.kspigot.commands.*
 import net.axay.kspigot.extensions.bukkit.actionBar
+import org.bukkit.entity.Player
 
 fun commands() {
+    fun Player.sendTrainingVersion() = sendMessage("$PREFIX This server is running ${"Training-v2".col("green")} (${Manager.description.version.col("green")})")
     command("training") {
+        simpleExecutes { it.source.player.sendTrainingVersion() }
+        literal("version") { simpleExecutes { it.source.player.sendTrainingVersion() } }
         literal("reload") {
             simpleExecutes {
                 Config.reload()
