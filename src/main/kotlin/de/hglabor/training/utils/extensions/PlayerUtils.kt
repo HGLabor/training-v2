@@ -18,7 +18,8 @@ fun Entity.isCreative(): Boolean = this is Player && this.gameMode == GameMode.C
 fun Cancellable.cancel() { this.isCancelled = true }
 
 fun Player.clearInv() {
-    this.inventory.clear()
+    inventory.clear()
+    setItemOnCursor(null)
 }
 
 fun Player.noMove(seconds: Int) {

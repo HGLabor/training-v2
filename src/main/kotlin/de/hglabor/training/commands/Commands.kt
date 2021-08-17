@@ -7,13 +7,9 @@ import de.hglabor.training.challenge.CylinderChallenge
 import de.hglabor.training.challenge.challenges
 import de.hglabor.training.config.Config
 import de.hglabor.training.config.PREFIX
-import de.hglabor.training.events.updateChallenge
 import de.hglabor.training.events.updateChallengeIfSurvival
 import de.hglabor.training.main.Manager
-import de.hglabor.training.utils.extensions.bv2
-import de.hglabor.training.utils.extensions.col
-import de.hglabor.training.utils.extensions.onlinePlayers
-import de.hglabor.training.utils.extensions.we
+import de.hglabor.training.utils.extensions.*
 import net.axay.kspigot.chat.KColors
 import net.axay.kspigot.commands.*
 import net.axay.kspigot.extensions.bukkit.actionBar
@@ -48,7 +44,8 @@ fun commands() {
                                             else if (pos == "pos2") challenge.cuboidRegion.pos2 =
                                                 player.location.we()
                                             player.sendMessage("$PREFIX ${KColors.GREEN}Set $pos of challenge ${KColors.GRAY}${challenge.name} ${KColors.GREEN}to your current position.")
-                                            onlinePlayers { updateChallenge() }
+                                            onlinePlayers { updateChallengeIfSurvival() }
+                                            challenge.saveToConfig()
                                             challenge.restart()
                                         }
                                     }
@@ -60,13 +57,22 @@ fun commands() {
                                         val player = it.source.player
                                         challenge.cylinderRegion.setCenter(player.location.bv2())
                                         player.sendMessage("$PREFIX ${KColors.GREEN}Set center of challenge ${KColors.GRAY}${challenge.name} ${KColors.GREEN}to your current position.")
+                                        challenge.saveToConfig()
                                         challenge.restart()
                                         onlinePlayers { updateChallengeIfSurvival() }
                                     }
                                 }
                                 literal("radius") {
                                     argument("radius", IntegerArgumentType.integer(1)) {
-
+                                        simpleExecutes {
+                                            val player = it.source.player
+                                            val radius = it.getArgument<Int>("radius")
+                                            challenge.cylinderRegion.radius = radius.vector2()
+                                            player.sendMessage("$PREFIX ${KColors.GREEN}Set radius of challenge ${KColors.GRAY}${challenge.name} ${KColors.GREEN}to ${KColors.WHITE}$radius.")
+                                            challenge.saveToConfig()
+                                            challenge.restart()
+                                            onlinePlayers { updateChallengeIfSurvival() }
+                                        }
                                     }
                                 }
                             }

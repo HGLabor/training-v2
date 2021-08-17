@@ -26,7 +26,8 @@ fun BlockVector3.bukkit(): Location = Location(null, x.toDouble(), y.toDouble(),
 fun Number.vector2(): Vector2 = Vector2.at(this.toDouble(), this.toDouble())
 fun Material.defaultPattern(): BlockState = BukkitAdapter.asBlockState(stack())
 
-infix fun Player.inRegion(challenge: Challenge?) = challenge?.world == world && challenge.region.contains(location.we())
+infix fun Player.inRegion(challenge: Challenge?) = location inRegion challenge
+infix fun Location.inRegion(challenge: Challenge?) = challenge?.world != null && challenge.world == world && challenge.region.contains(we())
 
 val worldEdit: WorldEdit get() = WorldEdit.getInstance()
 

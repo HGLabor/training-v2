@@ -1,6 +1,7 @@
 package de.hglabor.training.challenge
 
 import com.sk89q.worldedit.regions.Region
+import de.hglabor.training.config.PREFIX
 import de.hglabor.training.events.ChallengeEnterEvent
 import de.hglabor.training.events.ChallengeLeaveEvent
 import de.hglabor.training.utils.extensions.reflectMethod
@@ -16,12 +17,16 @@ import org.bukkit.event.Event
 import org.bukkit.event.entity.EntityEvent
 import java.util.*
 
-abstract class Challenge(val name: String, val world: World, val region: Region, val color: ChatColor = KColors.WHITE) {
+abstract class Challenge(val name: String, val world: World, val color: ChatColor = KColors.WHITE) {
+    abstract var region: Region
+
     val players = HashSet<UUID>()
     inline fun players(forEach: Player.() -> Unit) {
         players.forEach { forEach(Bukkit.getPlayer(it)!!) }
     }
+    // Get from config
     open fun start() {}
+    // Don't save to config -> don't override values that were changed in the config
     open fun stop() {}
 
     fun restart() { stop(); start() }
@@ -52,9 +57,21 @@ abstract class Challenge(val name: String, val world: World, val region: Region,
      */
     inline fun <reified T : Event> challengePlayerEvent(crossinline callback: T.() -> Unit) {
         listen<T> {
-            if (it.reflectMethod<Player>("getPlayer")?.challenge ?: (it as EntityEvent).entity is Player &&  ((it as EntityEvent).entity as Player).challenge == this) callback.invoke(it)
+            // Try to reflect directly
+            var player = it.reflectMethod<Player>("getPlayer")
+            // Try to get from entity event
+            if (player == null) if ((it as EntityEvent).entity is Player) player = (it as EntityEvent).entity as Player
+            if (player?.challenge == this) it.callback()
         }
     }
+
+    fun Player.fail() {
+        sendMessage("$PREFIX ${KColors.RED}You failed ${this@Challenge.displayName}")
+        renewInv()
+        teleport(bedSpawnLocation ?: return)
+    }
+
+    open fun saveToConfig() {}
 
     open val hunger = false
     open val warpItems = true

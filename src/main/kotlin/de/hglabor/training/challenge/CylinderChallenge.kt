@@ -1,6 +1,7 @@
 package de.hglabor.training.challenge
 
 import com.sk89q.worldedit.regions.CylinderRegion
+import com.sk89q.worldedit.regions.Region
 import de.hglabor.training.main.Manager
 import de.hglabor.training.utils.extensions.*
 import org.bukkit.Location
@@ -26,22 +27,22 @@ private fun radius(name: String): Int { with(Manager.config) {
 
 open class CylinderChallenge(
     name: String,
-    world: World = world("mlg")!!,
+    world: World,
     private val floor: Material = Material.GOLD_BLOCK,
     private val wall: Material = Material.IRON_BLOCK,
     private val ceiling: Material = Material.BARRIER,
-    bottomY: Int = 0,
-    topY: Int = 255,
+    private val bottomY: Int = 0,
+    private val topY: Int = 255,
 ) :
-    Challenge(name, world, CylinderRegion(
-        world.we(),
-        center(name)!!.we(),
-        radius(name).vector2(),
-        bottomY, topY
-    )) {
+    Challenge(name, world) {
     val cylinderRegion get() = region as CylinderRegion
 
+    override lateinit var region: Region
+
     override fun start() {
+        // Get region from config
+        region = CylinderRegion(world.we(), center(name)!!.we(), radius(name).vector2(), bottomY, topY)
+
         worldEdit.editSession(world) {
             // Wall
             cylinder(cylinderRegion.floor, wall, filled = false, firstAir = true, height = 255)
@@ -50,5 +51,11 @@ open class CylinderChallenge(
             // Ceiling
             cylinder(cylinderRegion.ceiling, ceiling, height = 1)
         }
+    }
+
+    override fun saveToConfig() = with(Manager.config) {
+        // TODO Save region to config
+        set("challenge.$name.region.radius", cylinderRegion.radius.x.toInt())
+        set("challenge.$name.region.center", cylinderRegion.center.bukkit())
     }
 }
