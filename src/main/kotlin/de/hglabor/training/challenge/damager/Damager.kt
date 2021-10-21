@@ -1,7 +1,6 @@
 package de.hglabor.training.challenge.damager
 
 import de.hglabor.training.challenge.CuboidChallenge
-import de.hglabor.training.main.Manager
 import de.hglabor.training.mechanics.checkSoupMechanic
 import de.hglabor.training.utils.extensions.*
 import net.axay.kspigot.chat.KColors
@@ -65,16 +64,6 @@ class Damager(name: String, color: ChatColor = KColors.WHITE, private val period
         super.stop()
         task?.cancel()
         hologram?.remove()
-    }
-
-    override fun saveToConfig() {
-        super.saveToConfig()
-
-        // Save period
-        Manager.config.set("challenge.$name.damager.period", period)
-
-        // Save damage
-        Manager.config.set("challenge.$name.damager.damage", damage)
     }
 
     override val hunger = true
