@@ -5,7 +5,6 @@ import de.hglabor.training.main.Manager
 import de.hglabor.training.mechanics.checkSoupMechanic
 import de.hglabor.training.utils.extensions.*
 import net.axay.kspigot.chat.KColors
-import net.axay.kspigot.extensions.broadcast
 import net.axay.kspigot.extensions.geometry.add
 import net.axay.kspigot.runnables.KSpigotRunnable
 import net.axay.kspigot.runnables.task
@@ -15,32 +14,14 @@ import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerDropItemEvent
 import org.bukkit.event.player.PlayerInteractEvent
-import kotlin.properties.Delegates
 
 private const val DEFAULT_PERIOD = 10L
 private const val DEFAULT_DAMAGE = 4.0
 
-class Damager(name: String, color: ChatColor = KColors.WHITE) : CuboidChallenge(name, color = color) {
+class Damager(name: String, color: ChatColor = KColors.WHITE, private val period: Long = DEFAULT_PERIOD, private val damage: Double = DEFAULT_DAMAGE) : CuboidChallenge(name, color = color) {
     private var task: KSpigotRunnable? = null
     private var hologram: Hologram? = null
     override val displayName get() = "$name Damager"
-
-    private fun period() = with(Manager.config) {
-        val path = "challenge.$name.damager.period"
-        addDefault(path, DEFAULT_PERIOD)
-        Manager.saveConfig()
-        getLong(path)
-    }
-
-    private fun damage() = with(Manager.config) {
-        val path = "challenge.$name.damager.damage"
-        addDefault(path, DEFAULT_DAMAGE)
-        Manager.saveConfig()
-        getDouble(path)
-    }
-
-    private var period by Delegates.notNull<Long>()
-    private var damage by Delegates.notNull<Double>()
 
     init {
         challengePlayerEvent<PlayerInteractEvent> {
@@ -56,12 +37,6 @@ class Damager(name: String, color: ChatColor = KColors.WHITE) : CuboidChallenge(
 
     override fun start() {
         super.start()
-
-        // Get from config
-        period = period()
-        broadcast("Set period to $period")
-        damage = damage()
-        broadcast("Set damage to $damage")
 
         val holoLoc = cuboidRegion.center.bukkit().clone().add(0, 2, 0)
         hologram = hologram(holoLoc, "$color$displayName", "Damage: ${KColors.GOLD}${damage/2} ${KColors.RED}\u2764", "Period: ${KColors.GOLD}$period", world = world)

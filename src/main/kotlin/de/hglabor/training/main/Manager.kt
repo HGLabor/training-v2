@@ -51,11 +51,11 @@ class InternalMainClass : KSpigot() {
         challengeListener()
         regionListener()
         registerChallenges(
-            Damager("noob", KColors.AQUA),
-            Damager("easy", KColors.GREEN),
-            Damager("medium", KColors.ORANGE),
-            Damager("hard", KColors.RED),
-            Damager("impossible", KColors.BLACK),
+            Damager("noob", KColors.AQUA, 20, 4.0),
+            Damager("easy", KColors.GREEN, 10, 4.0),
+            Damager("medium", KColors.ORANGE, 10, 5.0),
+            Damager("hard", KColors.RED, 10, 7.0),
+            Damager("impossible", KColors.BLACK, 1, 1.0),
             Mlg("test")
         )
         commands()
