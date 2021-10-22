@@ -4,6 +4,7 @@ import com.sk89q.worldedit.regions.Region
 import de.hglabor.training.config.PREFIX
 import de.hglabor.training.events.ChallengeEnterEvent
 import de.hglabor.training.events.ChallengeLeaveEvent
+import de.hglabor.training.events.updateChallengeIfSurvival
 import de.hglabor.training.utils.extensions.reflectMethod
 import de.hglabor.training.utils.renewInv
 import net.axay.kspigot.chat.KColors
@@ -67,8 +68,9 @@ abstract class Challenge(val name: String, val world: World, val color: ChatColo
 
     fun Player.fail() {
         sendMessage("$PREFIX ${KColors.RED}You failed ${this@Challenge.displayName}")
+        teleport(bedSpawnLocation ?: world.spawnLocation)
+        updateChallengeIfSurvival()
         renewInv()
-        teleport(bedSpawnLocation ?: return)
     }
 
     open fun saveToConfig() {}

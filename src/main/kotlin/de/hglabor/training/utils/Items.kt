@@ -1,6 +1,8 @@
 package de.hglabor.training.utils
 
 import de.hglabor.training.challenge.challenge
+import de.hglabor.training.challenge.damager.Damager
+import de.hglabor.training.config.PREFIX
 import de.hglabor.training.guis.openWarpsGUI
 import de.hglabor.training.utils.extensions.cancel
 import de.hglabor.training.utils.extensions.clearInv
@@ -10,6 +12,7 @@ import net.axay.kspigot.extensions.bukkit.feedSaturate
 import net.axay.kspigot.items.itemStack
 import net.axay.kspigot.items.meta
 import net.axay.kspigot.items.name
+import org.bukkit.GameMode
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.block.Action
@@ -60,19 +63,31 @@ fun itemsListener() {
     listen<PlayerInteractEvent> { with (it) {
         if (!item.isWarpItem()) return@listen
         cancel()
-        if (it is PlayerInteractAtEntityEvent || hand == EquipmentSlot.OFF_HAND) return@listen
-        when (item) {
-            WARPS -> if (isRightClick) player.openWarpsGUI()
-            HUB -> if (isRightClick) player.sendMessage("hub") // TODO send player to lobby
-            RESPAWN_ANCHOR -> {
-                // TODO set/reset respawn point
-                if (isRightClick) player.sendMessage("respawn anchor right click")
-                else if (isLeftClick) player.sendMessage("respawn anchor left click")
+        if (this is PlayerInteractAtEntityEvent || hand == EquipmentSlot.OFF_HAND) return@listen
+        with (player) {
+            when (item) {
+                WARPS -> if (isRightClick) openWarpsGUI()
+                HUB -> if (isRightClick) sendMessage("hub") // TODO send player to lobby
+                RESPAWN_ANCHOR -> {
+                    // TODO set/reset respawn point
+                    if (isRightClick) {
+                        bedSpawnLocation = null
+                        sendMessage("$PREFIX ${KColors.YELLOW}Reset respawn location.")
+                    }
+                    else if (isLeftClick) {
+                        if (challenge is Damager)
+                            sendMessage("$PREFIX ${KColors.RED}Here you can't update your respawn location.")
+                        else {
+                            setBedSpawnLocation(location, true)
+                            sendMessage("$PREFIX ${KColors.GREEN}Updated respawn location.")
+                        }
+                    }
+                }
             }
         }
     }}
     listen<PlayerDropItemEvent> { with(it) {
-        if (itemDrop.itemStack.isWarpItem()) cancel()
+        if (itemDrop.itemStack.isWarpItem() || (player.challenge == null && player.gameMode == GameMode.SURVIVAL)) cancel()
     }}
 }
 

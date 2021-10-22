@@ -1,11 +1,9 @@
 package de.hglabor.training.challenge.damager
 
 import de.hglabor.training.challenge.CuboidChallenge
-import de.hglabor.training.config.PREFIX
 import de.hglabor.training.mechanics.checkSoupMechanic
 import de.hglabor.training.utils.extensions.*
 import net.axay.kspigot.chat.KColors
-import net.axay.kspigot.extensions.broadcast
 import net.axay.kspigot.extensions.geometry.add
 import net.axay.kspigot.runnables.KSpigotRunnable
 import net.axay.kspigot.runnables.task
@@ -41,13 +39,11 @@ open class Damager(name: String, color: ChatColor = KColors.WHITE, private val p
 
         val holoLoc = cuboidRegion.center.bukkit().clone().add(0, 2, 0)
         hologram = hologram(holoLoc, "$color$displayName", "Damage: ${KColors.GOLD}${damage/2} ${KColors.RED}\u2764", "Period: ${KColors.GOLD}$period", world = world)
-        broadcast("$PREFIX Starting task for $displayName (period = $period, damage = $damage)")
         task = task(period = period) {
             if(it.isCancelled) return@task
             players {
-                broadcast("$PREFIX $displayName: Damaging player $damage hearts.")
-                if (health - damage == 0.0) fail()
-                damage(damage)
+                if (health - damage <= 0.0) fail()
+                else damage(damage)
             }
         }
     }
