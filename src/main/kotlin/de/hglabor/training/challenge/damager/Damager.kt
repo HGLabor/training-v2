@@ -1,9 +1,11 @@
 package de.hglabor.training.challenge.damager
 
 import de.hglabor.training.challenge.CuboidChallenge
+import de.hglabor.training.config.PREFIX
 import de.hglabor.training.mechanics.checkSoupMechanic
 import de.hglabor.training.utils.extensions.*
 import net.axay.kspigot.chat.KColors
+import net.axay.kspigot.extensions.broadcast
 import net.axay.kspigot.extensions.geometry.add
 import net.axay.kspigot.runnables.KSpigotRunnable
 import net.axay.kspigot.runnables.task
@@ -17,7 +19,7 @@ import org.bukkit.event.player.PlayerInteractEvent
 private const val DEFAULT_PERIOD = 10L
 private const val DEFAULT_DAMAGE = 4.0
 
-class Damager(name: String, color: ChatColor = KColors.WHITE, private val period: Long = DEFAULT_PERIOD, private val damage: Double = DEFAULT_DAMAGE) : CuboidChallenge(name, color = color) {
+open class Damager(name: String, color: ChatColor = KColors.WHITE, private val period: Long = DEFAULT_PERIOD, private val damage: Double = DEFAULT_DAMAGE) : CuboidChallenge(name, color = color) {
     private var task: KSpigotRunnable? = null
     private var hologram: Hologram? = null
     override val displayName get() = "$name Damager"
@@ -39,9 +41,11 @@ class Damager(name: String, color: ChatColor = KColors.WHITE, private val period
 
         val holoLoc = cuboidRegion.center.bukkit().clone().add(0, 2, 0)
         hologram = hologram(holoLoc, "$color$displayName", "Damage: ${KColors.GOLD}${damage/2} ${KColors.RED}\u2764", "Period: ${KColors.GOLD}$period", world = world)
+        broadcast("$PREFIX Starting task for $displayName (period = $period, damage = $damage)")
         task = task(period = period) {
             if(it.isCancelled) return@task
             players {
+                broadcast("$PREFIX $displayName: Damaging player $damage hearts.")
                 if (health - damage == 0.0) fail()
                 damage(damage)
             }
@@ -50,6 +54,7 @@ class Damager(name: String, color: ChatColor = KColors.WHITE, private val period
 
     override fun onEnter(player: Player) {
         player.saturation = 0F
+        player.maximumNoDamageTicks = 0 // Do this so periods < 20 work (e.g. impossible damager)
         with(player.inventory) {
             setItem(0, Material.STONE_SWORD.stack())
             for (i in 1..35) setItem(i, Material.MUSHROOM_STEW.stack())
@@ -58,6 +63,10 @@ class Damager(name: String, color: ChatColor = KColors.WHITE, private val period
             setItem(14, Material.RED_MUSHROOM.stack(64))
             setItem(15, Material.BROWN_MUSHROOM.stack(64))
         }
+    }
+
+    override fun onLeave(player: Player) {
+        player.maximumNoDamageTicks = 20
     }
 
     override fun stop() {

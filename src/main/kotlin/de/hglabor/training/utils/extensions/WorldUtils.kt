@@ -29,6 +29,7 @@ fun World.trainingGameRules(): World {
     setGameRule(GameRule.DO_MOB_SPAWNING, false)
     setGameRule(GameRule.SHOW_DEATH_MESSAGES, false)
     setGameRule(GameRule.DO_IMMEDIATE_RESPAWN, true)
+    setGameRule(GameRule.KEEP_INVENTORY, true)
     return this
 }
 
