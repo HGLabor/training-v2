@@ -13,12 +13,12 @@ import org.bukkit.World
 
 private val defaultPos = listOf(Location(null, 4.0, 64.0, 6.0), Location(null, 10.0, 65.0, 12.0))
 
-private fun pos(name: String, number: Int): Location? { with(Manager.config) {
+private fun pos(name: String, number: Int): Location? = with(Manager.config) {
     val path = "challenge.$name.region.pos$number"
     addDefault(path, defaultPos[number-1])
     Manager.saveConfig()
-    return getLocation(path)
-}}
+    getLocation(path)
+}
 
 open class CuboidChallenge(name: String, world: World = world("world")!!, color: ChatColor = KColors.WHITE) :
     Challenge(name, world, color) {

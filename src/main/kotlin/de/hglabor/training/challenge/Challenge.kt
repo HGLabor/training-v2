@@ -70,6 +70,7 @@ abstract class Challenge(val name: String, val world: World, val color: ChatColo
         sendMessage("$PREFIX ${KColors.RED}You failed ${this@Challenge.displayName}")
         teleport(bedSpawnLocation ?: world.spawnLocation)
         updateChallengeIfSurvival()
+        closeInventory()
         renewInv()
     }
 

@@ -11,19 +11,19 @@ import org.bukkit.World
 private val DEFAULT_CENTER = world("mlg")!!.spawnLocation
 private const val DEFAULT_RADIUS = 30
 
-private fun center(name: String): Location? { with(Manager.config) {
+private fun center(name: String): Location? = with(Manager.config) {
     val path = "challenge.$name.region.center"
     addDefault(path, DEFAULT_CENTER)
     Manager.saveConfig()
-    return getLocation(path)
-}}
+    getLocation(path)
+}
 
-private fun radius(name: String): Int { with(Manager.config) {
+private fun radius(name: String) = with(Manager.config) {
     val path = "challenge.$name.region.radius"
     addDefault(path, DEFAULT_RADIUS)
     Manager.saveConfig()
-    return getInt(path)
-}}
+    getInt(path)
+}
 
 open class CylinderChallenge(
     name: String,
