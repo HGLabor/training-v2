@@ -38,6 +38,7 @@ val WARP_ITEMS = listOf(WARPS, HUB, RESPAWN_ANCHOR, SETTINGS)
 val LOCATIONS =  listOf(0,     7,   8,              17)
 
 fun Player.renewInv() {
+    closeInventory()
     clearInv()
     feedSaturate()
     health = healthScale

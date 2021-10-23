@@ -56,7 +56,8 @@ class InternalMainClass : KSpigot() {
             Damager("medium", KColors.ORANGE, 10, 5.0),
             Damager("hard", KColors.RED, 10, 7.0),
             Damager("impossible", KColors.BLACK, 1, 1.0),
-            Mlg("test")
+            // TODO Crap Damager
+            Mlg("test") // TODO MLGs
         )
         commands()
         challenges.forEach { it.start() }
@@ -64,7 +65,7 @@ class InternalMainClass : KSpigot() {
         config.options().copyDefaults(true)
 
         listen<EntityDamageByEntityEvent> { it.cancel() }
-        listen<PlayerAttemptPickupItemEvent> { if (it.player.challenge == null) it.cancel() }
+        listen<PlayerAttemptPickupItemEvent> { if (it.player.challenge == null && it.player.gameMode == GameMode.SURVIVAL) it.cancel() }
 
         listen<PlayerJoinEvent> { with(it) {
             joinMessage = null
