@@ -1,6 +1,7 @@
 package de.hglabor.training.mechanics
 
-import de.hglabor.training.utils.extensions.stack
+import de.hglabor.utils.kutils.isRightClick
+import de.hglabor.utils.kutils.stack
 import net.axay.kspigot.extensions.bukkit.feed
 import net.axay.kspigot.extensions.bukkit.heal
 import org.bukkit.Material
@@ -13,7 +14,7 @@ const val healAmount = 7
 const val feedAmount = 6
 
 fun PlayerInteractEvent.checkSoupMechanic(): Boolean {
-    return if (action.name.contains("right_click", ignoreCase = true) && hand != EquipmentSlot.OFF_HAND && material in soups) {
+    return if (isRightClick && hand != EquipmentSlot.OFF_HAND && material in soups) {
         with(player) {
             var used = false
             // Heal

@@ -3,7 +3,7 @@ package de.hglabor.training.challenge
 import com.sk89q.worldedit.regions.CylinderRegion
 import com.sk89q.worldedit.regions.Region
 import de.hglabor.training.main.Manager
-import de.hglabor.training.utils.extensions.*
+import de.hglabor.utils.kutils.*
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.World
@@ -56,6 +56,6 @@ open class CylinderChallenge(
     override fun saveToConfig() = with(Manager.config) {
         // TODO Save region to config
         set("challenge.$name.region.radius", cylinderRegion.radius.x.toInt())
-        set("challenge.$name.region.center", cylinderRegion.center.bukkit())
+        set("challenge.$name.region.center", cylinderRegion.center.location())
     }
 }

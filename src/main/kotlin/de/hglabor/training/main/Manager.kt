@@ -11,12 +11,12 @@ import de.hglabor.training.config.Config
 import de.hglabor.training.events.regionListener
 import de.hglabor.training.events.updateChallenge
 import de.hglabor.training.events.updateChallengeIfSurvival
-import de.hglabor.training.utils.extensions.cancel
-import de.hglabor.training.utils.extensions.isCreative
-import de.hglabor.training.utils.extensions.trainingGameRules
-import de.hglabor.training.utils.extensions.world
-import de.hglabor.training.utils.itemsListener
-import de.hglabor.training.utils.renewInv
+import de.hglabor.training.itemsListener
+import de.hglabor.training.renewInv
+import de.hglabor.utils.kutils.cancel
+import de.hglabor.utils.kutils.isCreative
+import de.hglabor.utils.kutils.trainingGameRules
+import de.hglabor.utils.kutils.world
 import net.axay.kspigot.chat.KColors
 import net.axay.kspigot.event.listen
 import net.axay.kspigot.main.KSpigot
@@ -68,6 +68,7 @@ class InternalMainClass : KSpigot() {
         listen<PlayerAttemptPickupItemEvent> { if (it.player.challenge == null && it.player.gameMode == GameMode.SURVIVAL) it.cancel() }
 
         listen<PlayerJoinEvent> { with(it) {
+            @Suppress("DEPRECATION")
             joinMessage = null
             player.renewInv()
             player.teleport(player.location.world!!.spawnLocation)
@@ -75,6 +76,7 @@ class InternalMainClass : KSpigot() {
         }}
 
         listen<PlayerQuitEvent> { with(it) {
+            @Suppress("DEPRECATION")
             quitMessage = null
             player.challenge = null
         }}

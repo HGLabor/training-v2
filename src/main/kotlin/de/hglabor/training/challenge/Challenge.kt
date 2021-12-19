@@ -5,8 +5,8 @@ import de.hglabor.training.config.PREFIX
 import de.hglabor.training.events.ChallengeEnterEvent
 import de.hglabor.training.events.ChallengeLeaveEvent
 import de.hglabor.training.events.updateChallengeIfSurvival
-import de.hglabor.training.utils.extensions.reflectMethod
-import de.hglabor.training.utils.renewInv
+import de.hglabor.training.renewInv
+import de.hglabor.utils.kutils.reflectMethod
 import net.axay.kspigot.chat.KColors
 import net.axay.kspigot.event.listen
 import net.axay.kspigot.extensions.bukkit.actionBar

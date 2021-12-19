@@ -1,8 +1,12 @@
 package de.hglabor.training.challenge.damager
 
 import de.hglabor.training.challenge.CuboidChallenge
+import de.hglabor.training.challenge.inRegion
 import de.hglabor.training.mechanics.checkSoupMechanic
-import de.hglabor.training.utils.extensions.*
+import de.hglabor.utils.kutils.Hologram
+import de.hglabor.utils.kutils.hologram
+import de.hglabor.utils.kutils.location
+import de.hglabor.utils.kutils.stack
 import net.axay.kspigot.chat.KColors
 import net.axay.kspigot.extensions.geometry.add
 import net.axay.kspigot.runnables.KSpigotRunnable
@@ -37,7 +41,7 @@ open class Damager(name: String, color: ChatColor = KColors.WHITE, private val p
     override fun start() {
         super.start()
 
-        val holoLoc = cuboidRegion.center.bukkit().clone().add(0, 2, 0)
+        val holoLoc = cuboidRegion.center.location().clone().add(0, 2, 0)
         hologram = hologram(holoLoc, "$color$displayName", "Damage: ${KColors.GOLD}${damage/2} ${KColors.RED}\u2764", "Period: ${KColors.GOLD}$period", world = world)
         task = task(period = period) {
             if(it.isCancelled) return@task

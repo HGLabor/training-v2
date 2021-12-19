@@ -1,33 +1,21 @@
-package de.hglabor.training.utils
+package de.hglabor.training
 
 import de.hglabor.training.challenge.challenge
 import de.hglabor.training.challenge.damager.Damager
 import de.hglabor.training.config.PREFIX
 import de.hglabor.training.guis.openWarpsGUI
-import de.hglabor.training.utils.extensions.cancel
-import de.hglabor.training.utils.extensions.clearInv
+import de.hglabor.utils.kutils.*
 import net.axay.kspigot.chat.KColors
 import net.axay.kspigot.event.listen
 import net.axay.kspigot.extensions.bukkit.feedSaturate
-import net.axay.kspigot.items.itemStack
-import net.axay.kspigot.items.meta
-import net.axay.kspigot.items.name
 import org.bukkit.GameMode
 import org.bukkit.Material
 import org.bukkit.entity.Player
-import org.bukkit.event.block.Action
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.player.PlayerDropItemEvent
-import org.bukkit.event.player.PlayerInteractAtEntityEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.ItemStack
-
-fun namedItem(material: Material, name: String): ItemStack {
-    return itemStack(material) {
-        meta { this.name = name }
-    }
-}
 
 val WARPS = namedItem(Material.NETHER_STAR, "${KColors.AQUA}${KColors.BOLD}Warps")
 val HUB = namedItem(Material.HEART_OF_THE_SEA, "${KColors.GOLD}${KColors.BOLD}Hub")
@@ -64,7 +52,7 @@ fun itemsListener() {
     listen<PlayerInteractEvent> { with (it) {
         if (!item.isWarpItem()) return@listen
         cancel()
-        if (this is PlayerInteractAtEntityEvent || hand == EquipmentSlot.OFF_HAND) return@listen
+        if (hand == EquipmentSlot.OFF_HAND) return@listen
         with (player) {
             when (item) {
                 WARPS -> if (isRightClick) openWarpsGUI()
@@ -91,6 +79,3 @@ fun itemsListener() {
         if (itemDrop.itemStack.isWarpItem() || (player.challenge == null && player.gameMode == GameMode.SURVIVAL)) cancel()
     }}
 }
-
-private val PlayerInteractEvent.isRightClick get() = action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK
-private val PlayerInteractEvent.isLeftClick get() = action == Action.LEFT_CLICK_AIR || action == Action.LEFT_CLICK_BLOCK

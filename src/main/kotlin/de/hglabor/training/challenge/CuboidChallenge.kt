@@ -3,9 +3,9 @@ package de.hglabor.training.challenge
 import com.sk89q.worldedit.regions.CuboidRegion
 import com.sk89q.worldedit.regions.Region
 import de.hglabor.training.main.Manager
-import de.hglabor.training.utils.extensions.bukkit
-import de.hglabor.training.utils.extensions.we
-import de.hglabor.training.utils.extensions.world
+import de.hglabor.utils.kutils.location
+import de.hglabor.utils.kutils.we
+import de.hglabor.utils.kutils.world
 import net.axay.kspigot.chat.KColors
 import net.md_5.bungee.api.ChatColor
 import org.bukkit.Location
@@ -33,7 +33,7 @@ open class CuboidChallenge(name: String, world: World = world("world")!!, color:
     override fun saveToConfig() = with(Manager.config) {
         for (pos in 1..2) {
             val path = "challenge.${this@CuboidChallenge.name}.region.pos$pos"
-            val location = (if (pos == 1) cuboidRegion.pos1.bukkit() else cuboidRegion.pos2.bukkit())
+            val location = (if (pos == 1) cuboidRegion.pos1.location() else cuboidRegion.pos2.location())
             if (getLocation(path) != location) set(path, location)
         }
     }

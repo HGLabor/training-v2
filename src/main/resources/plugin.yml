@@ -1,7 +1,0 @@
-name: Training
-version: 1.0-SNAPSHOT
-main: de.hglabor.training.main.InternalMainClass
-api-version: 1.17
-
-libraries:
-  - "net.axay:kspigot:1.17.2"

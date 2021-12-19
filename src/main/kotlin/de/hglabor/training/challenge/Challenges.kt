@@ -2,7 +2,9 @@ package de.hglabor.training.challenge
 
 import de.hglabor.training.events.ChallengeEnterEvent
 import de.hglabor.training.events.ChallengeLeaveEvent
-import de.hglabor.training.utils.extensions.call
+import de.hglabor.utils.kutils.call
+import de.hglabor.utils.kutils.we
+import org.bukkit.Location
 import org.bukkit.entity.Player
 
 val challenges = HashSet<Challenge>()
@@ -33,6 +35,9 @@ fun Challenge?.addPlayer(player: Player) = this?.players?.add(player.uniqueId) ?
 infix fun Challenge?.contains(player: Player) = this?.players?.contains(player.uniqueId) ?: false
 infix fun Player?.inChallenge(challenge: Challenge?) = this?.challenge == challenge
 infix fun Player?.notInChallenge(challenge: Challenge?) = !inChallenge(challenge)
+
+infix fun Player.inRegion(challenge: Challenge?) = location inRegion challenge
+infix fun Location.inRegion(challenge: Challenge?) = challenge?.world != null && challenge.world == world && challenge.region.contains(we())
 
 /** when this is null the player isn't inside any challenge */
 var Player.challenge: Challenge?
