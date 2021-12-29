@@ -1,10 +1,10 @@
 package de.hglabor.training.challenge
 
 import com.sk89q.worldedit.regions.Region
-import de.hglabor.training.config.PREFIX
 import de.hglabor.training.events.ChallengeEnterEvent
 import de.hglabor.training.events.ChallengeLeaveEvent
 import de.hglabor.training.events.updateChallengeIfSurvival
+import de.hglabor.training.main.PREFIX
 import de.hglabor.training.renewInv
 import de.hglabor.utils.kutils.reflectMethod
 import net.axay.kspigot.chat.KColors

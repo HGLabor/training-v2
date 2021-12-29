@@ -7,7 +7,6 @@ import de.hglabor.training.challenge.damager.Damager
 import de.hglabor.training.challenge.mlg.Mlg
 import de.hglabor.training.challenge.registerChallenges
 import de.hglabor.training.commands.commands
-import de.hglabor.training.config.Config
 import de.hglabor.training.events.regionListener
 import de.hglabor.training.events.updateChallenge
 import de.hglabor.training.events.updateChallengeIfSurvival
@@ -21,6 +20,7 @@ import net.axay.kspigot.chat.KColors
 import net.axay.kspigot.event.listen
 import net.axay.kspigot.main.KSpigot
 import org.bukkit.Bukkit
+import org.bukkit.ChatColor
 import org.bukkit.GameMode
 import org.bukkit.WorldCreator
 import org.bukkit.entity.Player
@@ -31,6 +31,7 @@ import org.bukkit.event.entity.FoodLevelChangeEvent
 import org.bukkit.event.player.*
 
 val Manager by lazy { InternalMainClass.INSTANCE }
+val PREFIX: String = "${ChatColor.DARK_GRAY}[${ChatColor.AQUA}Training${ChatColor.DARK_GRAY}]${ChatColor.WHITE}"
 
 class InternalMainClass : KSpigot() {
     companion object {
@@ -41,11 +42,16 @@ class InternalMainClass : KSpigot() {
         INSTANCE = this
     }
 
+    fun loadConfig() {
+        config.options().copyDefaults(true)
+        saveConfig()
+    }
+
     override fun startup() {
         Bukkit.createWorld(WorldCreator("mlg"))?.trainingGameRules() ?: throw RuntimeException("mlg World could not be created.")
         world("world")!!.trainingGameRules()
 
-        Config.load()
+        loadConfig()
 
         itemsListener()
         challengeListener()

@@ -3,7 +3,6 @@ package de.hglabor.training.commands
 import com.mojang.brigadier.arguments.IntegerArgumentType
 import de.hglabor.training.challenge.*
 import de.hglabor.training.challenge.mlg.Mlg
-import de.hglabor.training.config.Config
 import de.hglabor.training.config.PREFIX
 import de.hglabor.training.events.updateChallengeIfSurvival
 import de.hglabor.training.main.Manager
@@ -13,10 +12,7 @@ import net.axay.kspigot.commands.argument
 import net.axay.kspigot.commands.command
 import net.axay.kspigot.commands.literal
 import net.axay.kspigot.commands.runs
-import net.axay.kspigot.event.listen
-import org.bukkit.craftbukkit.v1_18_R1.CraftWorld
 import org.bukkit.entity.Player
-import org.bukkit.event.player.PlayerInteractAtEntityEvent
 
 fun commands() {
     fun Player.sendTrainingVersion() = sendMessage("$PREFIX This server is running ${"Training-v2".col("green")} (${Manager.description.version.col("green")})")
@@ -25,7 +21,7 @@ fun commands() {
         literal("version") { runs { player.sendTrainingVersion() } }
         literal("reload") {
             runs {
-                 Config.reload()
+                 Manager.reloadConfig()
                  player.sendMessage("$PREFIX Reloaded config")
                  challenges.forEach(Challenge::restart)
             }
@@ -42,19 +38,8 @@ fun commands() {
                         literal("warpentity") {
                             runs {
                                 // Teleports the warp entity for this mlg to the players current position
-                                // TODO
-                                (player.world as CraftWorld).createEntity(player.location, challenge.warpEntity.java).bukkitEntity.apply {
-                                    customName = "${challenge.color}${challenge.displayName}"
-                                    statueAttributes()
-                                    listen<PlayerInteractAtEntityEvent> { event ->
-                                        if (event.rightClicked == this) {
-                                            event.cancel()
-                                            player.teleport(challenge.spawn)
-                                            player.updateChallengeIfSurvival()
-                                        }
-                                    }
-                                }
-                                player.sendMessage("$PREFIX ${KColors.GREEN}Created new warpentity for challenge ${KColors.WHITE}${challenge.displayName} ${KColors.GREEN}at your position.")
+                                challenge.warpEntity.teleport(player.location)
+                                player.sendMessage("$PREFIX ${KColors.GREEN}Teleported warpentity of ${KColors.WHITE}${challenge.displayName} ${KColors.GREEN}to your position.")
                             }
                         }
                     }

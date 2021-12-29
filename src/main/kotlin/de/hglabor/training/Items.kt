@@ -8,6 +8,7 @@ import de.hglabor.utils.kutils.*
 import net.axay.kspigot.chat.KColors
 import net.axay.kspigot.event.listen
 import net.axay.kspigot.extensions.bukkit.feedSaturate
+import net.axay.kspigot.extensions.bukkit.sendToServer
 import org.bukkit.GameMode
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -56,9 +57,8 @@ fun itemsListener() {
         with (player) {
             when (item) {
                 WARPS -> if (isRightClick) openWarpsGUI()
-                HUB -> if (isRightClick) sendMessage("hub") // TODO send player to lobby
+                HUB -> if (isRightClick) sendToServer("Lobby-1") // TODO not hardcoded
                 RESPAWN_ANCHOR -> {
-                    // TODO set/reset respawn point
                     if (isRightClick) {
                         bedSpawnLocation = null
                         sendMessage("$PREFIX ${KColors.YELLOW}Reset respawn location.")

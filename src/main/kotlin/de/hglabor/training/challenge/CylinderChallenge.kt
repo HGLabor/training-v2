@@ -54,7 +54,6 @@ open class CylinderChallenge(
     }
 
     override fun saveToConfig() = with(Manager.config) {
-        // TODO Save region to config
         set("challenge.$name.region.radius", cylinderRegion.radius.x.toInt())
         set("challenge.$name.region.center", cylinderRegion.center.location())
     }
