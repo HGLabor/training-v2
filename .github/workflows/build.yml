@@ -22,7 +22,7 @@ jobs:
       run: chmod +x gradlew
     
     - name: Build
-      run: ./gradlew build
+      run: ./gradlew shadowJar
     
     - name: Release
       uses: "marvinpinto/action-automatic-releases@latest"
