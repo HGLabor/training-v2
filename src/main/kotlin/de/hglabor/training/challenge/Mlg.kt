@@ -2,22 +2,23 @@ package de.hglabor.training.challenge
 
 import com.sk89q.worldedit.math.Vector2
 import de.hglabor.training.events.updateChallengeIfSurvival
+import de.hglabor.training.serialization.ChatColorSerializer
 import de.hglabor.utils.kutils.*
-import de.hglabor.utils.kutils.serialization.ChatColorSerializer
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 import net.axay.kspigot.event.listen
 import net.md_5.bungee.api.ChatColor
 import org.bukkit.Material
-import org.bukkit.World
 import org.bukkit.entity.Entity
 import org.bukkit.entity.EntityType
 import org.bukkit.event.player.PlayerInteractAtEntityEvent
 
+@SerialName("mlg")
 @Serializable
 class Mlg(
     override val name: String,
     @Serializable(with = ChatColorSerializer::class) override val color: ChatColor,
-    override val world: World = world("mlg")!!,
     private val platformMaterial: Material = Material.SMOOTH_QUARTZ,
     private val platformHeights: List<Int> = listOf(25, 50, 100, 150, 200, 250),
     private val platformRadius: Double = 10.0,
@@ -29,8 +30,7 @@ class Mlg(
         this.world = this@Mlg.world
         this.y = 101.0
     }
-
-    lateinit var warpEntity: Entity
+    @Transient lateinit var warpEntity: Entity
     override fun start() {
         super.start()
         warpEntity = world.spawnEntity(world.spawnLocation, warpEntityType).apply {
@@ -51,6 +51,11 @@ class Mlg(
                 cylinder(platformRegion(it), platformMaterial, height = 1)
             }
         }
+    }
+
+    override fun stop() {
+        super.stop()
+        warpEntity.remove()
     }
 
     private fun platformRegion(y: Int) = cylinderRegion.clone().apply {

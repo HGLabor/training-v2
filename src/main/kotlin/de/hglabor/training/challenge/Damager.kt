@@ -1,11 +1,12 @@
 package de.hglabor.training.challenge
 
 import de.hglabor.training.mechanics.checkSoupMechanic
+import de.hglabor.training.serialization.ChatColorSerializer
 import de.hglabor.utils.kutils.Hologram
 import de.hglabor.utils.kutils.hologram
 import de.hglabor.utils.kutils.location
-import de.hglabor.utils.kutils.serialization.ChatColorSerializer
 import de.hglabor.utils.kutils.stack
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 import net.axay.kspigot.chat.KColors
@@ -22,6 +23,7 @@ import org.bukkit.event.player.PlayerInteractEvent
 private const val DEFAULT_PERIOD = 10L
 private const val DEFAULT_DAMAGE = 4.0
 
+@SerialName("damager")
 @Serializable
 class Damager(
     override val name: String,

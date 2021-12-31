@@ -6,9 +6,10 @@ import de.hglabor.training.events.ChallengeLeaveEvent
 import de.hglabor.training.events.updateChallengeIfSurvival
 import de.hglabor.training.main.PREFIX
 import de.hglabor.training.renewInv
+import de.hglabor.training.serialization.ChatColorSerializer
+import de.hglabor.training.serialization.UUIDSerializer
+import de.hglabor.training.serialization.WorldSerializer
 import de.hglabor.utils.kutils.reflectMethod
-import de.hglabor.utils.kutils.serialization.ChatColorSerializer
-import de.hglabor.utils.kutils.serialization.UUIDSerializer
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 import net.axay.kspigot.chat.KColors
@@ -25,12 +26,14 @@ import java.util.*
 @Serializable
 sealed class Challenge {
     abstract val name: String
+    @Serializable(with = WorldSerializer::class)
     abstract val world: World
     @Serializable(with = ChatColorSerializer::class)
     abstract val color: ChatColor
 
     abstract val region: Region
 
+    @Transient
     val players = HashSet<@Serializable(with = UUIDSerializer::class) UUID>()
     inline fun players(forEach: Player.() -> Unit) {
         players.forEach { forEach(Bukkit.getPlayer(it)!!) }

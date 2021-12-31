@@ -1,8 +1,8 @@
 group = "de.hglabor"
 version = "0.0.1"
 val kspigot = "1.18.0"
-val kutils = "0.0.9"
-val kotlinxSerializationJson = "1.3.2"
+val kutils = "0.0.7"
+val kotlinxSerializationJson = "1.3.1"
 
 plugins {
     kotlin("jvm") version "1.6.10"
@@ -34,7 +34,7 @@ repositories {
 dependencies {
     paperDevBundle("1.18.1-R0.1-SNAPSHOT")
     compileOnly("net.axay:kspigot:$kspigot")
-    compileOnly("org.jetbrains.kotlinx:kotlinx-serialization-json:$kotlinxSerializationJson")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:$kotlinxSerializationJson")
     implementation("de.hglabor.utils:kutils:$kutils")
     compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.2.8")
     compileOnly("de.dytanic.cloudnet", "cloudnet-bridge", "3.4.0-SNAPSHOT")

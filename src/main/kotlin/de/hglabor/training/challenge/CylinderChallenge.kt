@@ -2,6 +2,8 @@ package de.hglabor.training.challenge
 
 import com.sk89q.worldedit.regions.CylinderRegion
 import com.sk89q.worldedit.regions.Region
+import de.hglabor.training.serialization.CylinderRegionSerializer
+import de.hglabor.training.serialization.WorldSerializer
 import de.hglabor.utils.kutils.*
 import kotlinx.serialization.Serializable
 import org.bukkit.Material
@@ -18,14 +20,14 @@ sealed class CylinderChallenge(
     private val topY: Int = 255,
 ) :
     Challenge() {
+    @Serializable(with = WorldSerializer::class)
+    final override val world = world("mlg")!!
     val cylinderRegion get() = region as CylinderRegion
 
-    override lateinit var region: Region
+    @Serializable(with = CylinderRegionSerializer::class)
+    override val region: Region = CylinderRegion(world.we(), DEFAULT_CENTER.we(), DEFAULT_RADIUS.vector2(), bottomY, topY)
 
     override fun start() {
-        // Get region from config
-        region = CylinderRegion(world.we(), DEFAULT_CENTER.we(), DEFAULT_RADIUS.vector2(), bottomY, topY)
-
         worldEdit.editSession(world) {
             // Wall
             cylinder(cylinderRegion.floor, wall, filled = false, firstAir = true, height = 255)

@@ -32,6 +32,13 @@ import java.io.File
 val Manager by lazy { InternalMainClass.INSTANCE }
 val PREFIX: String = "${ChatColor.DARK_GRAY}[${ChatColor.AQUA}Training${ChatColor.DARK_GRAY}]${ChatColor.WHITE}"
 
+val json = Json {
+    prettyPrint = true
+    encodeDefaults = true
+    @Suppress("EXPERIMENTAL_API_USAGE")
+    prettyPrintIndent = "  "
+}
+
 class InternalMainClass : KSpigot() {
     companion object {
         lateinit var INSTANCE: InternalMainClass; private set
@@ -40,13 +47,6 @@ class InternalMainClass : KSpigot() {
     private val configFile by lazy {
         dataFolder.mkdir()
         File(dataFolder.path + "/challenges.json")
-    }
-
-    @Suppress("EXPERIMENTAL_API_USAGE")
-    private val json = Json {
-        prettyPrint = true
-        encodeDefaults = true
-        prettyPrintIndent = "  "
     }
 
     override fun load() {
@@ -141,5 +141,3 @@ class InternalMainClass : KSpigot() {
     }
 
 }
-
-
