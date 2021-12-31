@@ -31,4 +31,4 @@ jobs:
         automatic_release_tag: "latest"
         prerelease: true
         title: "Development Build"
-        files: build/libs/training-*.jar
+        files: build/libs/Training-*.jar
