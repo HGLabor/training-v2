@@ -2,10 +2,9 @@ package de.hglabor.training.commands
 
 import com.mojang.brigadier.arguments.IntegerArgumentType
 import de.hglabor.training.challenge.*
-import de.hglabor.training.challenge.mlg.Mlg
-import de.hglabor.training.config.PREFIX
 import de.hglabor.training.events.updateChallengeIfSurvival
 import de.hglabor.training.main.Manager
+import de.hglabor.training.main.PREFIX
 import de.hglabor.utils.kutils.*
 import net.axay.kspigot.chat.KColors
 import net.axay.kspigot.commands.argument

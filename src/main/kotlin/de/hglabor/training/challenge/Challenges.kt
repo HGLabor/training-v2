@@ -4,10 +4,12 @@ import de.hglabor.training.events.ChallengeEnterEvent
 import de.hglabor.training.events.ChallengeLeaveEvent
 import de.hglabor.utils.kutils.call
 import de.hglabor.utils.kutils.we
+import kotlinx.serialization.Serializable
 import org.bukkit.Location
 import org.bukkit.entity.Player
 
-val challenges = HashSet<Challenge>()
+@Serializable
+var challenges = HashSet<Challenge>()
 
 private fun HashSet<Challenge>.getForPlayer(player: Player): Challenge? {
     forEach {

@@ -1,9 +1,9 @@
 package de.hglabor.training
 
+import de.hglabor.training.challenge.Damager
 import de.hglabor.training.challenge.challenge
-import de.hglabor.training.challenge.damager.Damager
-import de.hglabor.training.config.PREFIX
 import de.hglabor.training.guis.openWarpsGUI
+import de.hglabor.training.main.PREFIX
 import de.hglabor.utils.kutils.*
 import net.axay.kspigot.chat.KColors
 import net.axay.kspigot.event.listen

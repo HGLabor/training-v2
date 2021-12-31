@@ -1,12 +1,13 @@
-package de.hglabor.training.challenge.damager
+package de.hglabor.training.challenge
 
-import de.hglabor.training.challenge.CuboidChallenge
-import de.hglabor.training.challenge.inRegion
 import de.hglabor.training.mechanics.checkSoupMechanic
 import de.hglabor.utils.kutils.Hologram
 import de.hglabor.utils.kutils.hologram
 import de.hglabor.utils.kutils.location
+import de.hglabor.utils.kutils.serialization.ChatColorSerializer
 import de.hglabor.utils.kutils.stack
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 import net.axay.kspigot.chat.KColors
 import net.axay.kspigot.extensions.geometry.add
 import net.axay.kspigot.runnables.KSpigotRunnable
@@ -21,9 +22,15 @@ import org.bukkit.event.player.PlayerInteractEvent
 private const val DEFAULT_PERIOD = 10L
 private const val DEFAULT_DAMAGE = 4.0
 
-open class Damager(name: String, color: ChatColor = KColors.WHITE, private val period: Long = DEFAULT_PERIOD, private val damage: Double = DEFAULT_DAMAGE) : CuboidChallenge(name, color = color) {
-    private var task: KSpigotRunnable? = null
-    private var hologram: Hologram? = null
+@Serializable
+class Damager(
+    override val name: String,
+    @Serializable(with = ChatColorSerializer::class) override val color: ChatColor = KColors.WHITE,
+    private val period: Long = DEFAULT_PERIOD,
+    private val damage: Double = DEFAULT_DAMAGE
+) : CuboidChallenge() {
+    @Transient private var task: KSpigotRunnable? = null
+    @Transient private var hologram: Hologram? = null
     override val displayName get() = "$name Damager"
 
     init {
