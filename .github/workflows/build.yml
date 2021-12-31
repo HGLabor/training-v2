@@ -1,7 +1,4 @@
-# This workflow will build a Kotlin gradle spigot plugin with Gradle
-# For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-gradle
-
-name: Gradlew Build
+name: Build
 
 on:
   push:
@@ -15,20 +12,14 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     
-    - name: Set up JDK 16
+    - name: Set up JDK 17
       uses: actions/setup-java@v2
       with:
-        java-version: '16'
+        java-version: '17'
         distribution: 'adopt'
     
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
-    
-    - name: Get BuildTools
-      run: wget https://hub.spigotmc.org/jenkins/job/BuildTools/lastSuccessfulBuild/artifact/target/BuildTools.jar
-    
-    - name: Compile Craftbukkit
-      run: java -jar BuildTools.jar --rev 1.17 --compile CRAFTBUKKIT
     
     - name: Build
       run: ./gradlew build
