@@ -7,7 +7,7 @@ import de.hglabor.utils.kutils.we
 import org.bukkit.Location
 import org.bukkit.entity.Player
 
-val challenges = HashSet<Challenge>()
+var challenges = HashSet<Challenge>()
 
 private fun HashSet<Challenge>.getForPlayer(player: Player): Challenge? {
     forEach {

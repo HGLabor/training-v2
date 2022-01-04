@@ -2,9 +2,11 @@ group = "de.hglabor"
 version = "0.0.1"
 val kspigot = "1.18.0"
 val kutils = "0.0.7"
+val kotlinxSerializationJson = "1.3.1"
 
 plugins {
-    kotlin("jvm") version "1.6.0"
+    kotlin("jvm") version "1.6.10"
+    kotlin("plugin.serialization") version "1.6.10"
     id("io.papermc.paperweight.userdev") version "1.3.2"
     id("net.minecrell.plugin-yml.bukkit") version "0.5.1"
     id("com.github.johnrengelman.shadow") version "7.1.1"
@@ -17,12 +19,13 @@ bukkit {
     apiVersion = "1.18"
     libraries = listOf(
         "net.axay:kspigot:$kspigot",
-        //"de.hglabor.utils:kutils:$kutils"
+        "org.jetbrains.kotlinx:kotlinx-serialization-json:$kotlinxSerializationJson",
     )
     softDepend = listOf("WorldEdit")
 }
 
 repositories {
+    mavenLocal()
     mavenCentral()
     maven("https://repo.cloudnetservice.eu/repository/snapshots/") // CloudNet
     maven("https://maven.enginehub.org/repo/")
@@ -31,10 +34,10 @@ repositories {
 dependencies {
     paperDevBundle("1.18.1-R0.1-SNAPSHOT")
     compileOnly("net.axay:kspigot:$kspigot")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:$kotlinxSerializationJson")
     implementation("de.hglabor.utils:kutils:$kutils")
     compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.2.8")
     compileOnly("de.dytanic.cloudnet", "cloudnet-bridge", "3.4.0-SNAPSHOT")
-    compileOnly(kotlin("stdlib-jdk8"))
 }
 
 tasks {

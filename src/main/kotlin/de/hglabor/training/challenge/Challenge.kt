@@ -6,7 +6,12 @@ import de.hglabor.training.events.ChallengeLeaveEvent
 import de.hglabor.training.events.updateChallengeIfSurvival
 import de.hglabor.training.main.PREFIX
 import de.hglabor.training.renewInv
+import de.hglabor.training.serialization.ChatColorSerializer
+import de.hglabor.training.serialization.UUIDSerializer
+import de.hglabor.training.serialization.WorldSerializer
 import de.hglabor.utils.kutils.reflectMethod
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 import net.axay.kspigot.chat.KColors
 import net.axay.kspigot.event.listen
 import net.axay.kspigot.extensions.bukkit.actionBar
@@ -18,21 +23,27 @@ import org.bukkit.event.Event
 import org.bukkit.event.entity.EntityEvent
 import java.util.*
 
-abstract class Challenge(val name: String, val world: World, val color: ChatColor = KColors.WHITE) {
-    abstract var region: Region
+@Serializable
+sealed class Challenge {
+    abstract val name: String
+    @Serializable(with = WorldSerializer::class)
+    abstract val world: World
+    @Serializable(with = ChatColorSerializer::class)
+    abstract val color: ChatColor
 
-    val players = HashSet<UUID>()
+    abstract val region: Region
+
+    @Transient
+    val players = HashSet<@Serializable(with = UUIDSerializer::class) UUID>()
     inline fun players(forEach: Player.() -> Unit) {
         players.forEach { forEach(Bukkit.getPlayer(it)!!) }
     }
-    // Get from config
     open fun start() {}
-    // Don't save to config -> don't override values that were changed in the config
     open fun stop() {}
 
     fun restart() { stop(); start() }
 
-    open val displayName = name
+    open val displayName get() = name
     internal fun enter(player: Player) {
         players.add(player.uniqueId)
         player.renewInv()
@@ -75,8 +86,8 @@ abstract class Challenge(val name: String, val world: World, val color: ChatColo
 
     open fun saveToConfig() {}
 
-    open val hunger = false
-    open val warpItems = true
+    @Transient open val hunger = false
+    @Transient open val warpItems = true
 }
 
 fun challengeListener() {
