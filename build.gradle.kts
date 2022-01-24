@@ -1,8 +1,8 @@
 group = "de.hglabor"
 version = "0.0.1"
 val kspigot = "1.18.0"
-val kutils = "0.0.7"
-val kotlinxSerializationJson = "1.3.1"
+val kutils = "0.0.14"
+val kotlinxSerializationJson = "1.3.2"
 
 plugins {
     kotlin("jvm") version "1.6.10"
@@ -18,8 +18,6 @@ bukkit {
     version = project.version.toString()
     apiVersion = "1.18"
     libraries = listOf(
-        "net.axay:kspigot:$kspigot",
-        "org.jetbrains.kotlinx:kotlinx-serialization-json:$kotlinxSerializationJson",
     )
     softDepend = listOf("WorldEdit")
 }
@@ -33,7 +31,7 @@ repositories {
 
 dependencies {
     paperDevBundle("1.18.1-R0.1-SNAPSHOT")
-    compileOnly("net.axay:kspigot:$kspigot")
+    implementation("net.axay:kspigot:$kspigot")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:$kotlinxSerializationJson")
     implementation("de.hglabor.utils:kutils:$kutils")
     compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.2.8")
