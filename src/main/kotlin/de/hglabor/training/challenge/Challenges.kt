@@ -1,4 +1,4 @@
-@file:Suppress("CanBeParameter")
+@file:Suppress("CanBeParameter", "SERIALIZER_TYPE_INCOMPATIBLE")
 
 package de.hglabor.training.challenge
 
@@ -6,10 +6,11 @@ import com.sk89q.worldedit.math.Vector2
 import com.sk89q.worldedit.regions.CuboidRegion
 import com.sk89q.worldedit.regions.CylinderRegion
 import com.sk89q.worldedit.regions.Region
+import de.hglabor.training.WARP_ITEMS
+import de.hglabor.training.defaultInv
 import de.hglabor.training.events.updateChallengeIfSurvival
 import de.hglabor.training.main.PREFIX
 import de.hglabor.training.mechanics.checkSoupMechanic
-import de.hglabor.training.renewInv
 import de.hglabor.training.serialization.*
 import de.hglabor.utils.kutils.*
 import kotlinx.serialization.SerialName
@@ -23,22 +24,18 @@ import net.axay.kspigot.runnables.KSpigotRunnable
 import net.axay.kspigot.runnables.task
 import net.axay.kspigot.runnables.taskRunLater
 import net.md_5.bungee.api.ChatColor
-import org.bukkit.Bukkit
-import org.bukkit.Location
-import org.bukkit.Material
-import org.bukkit.World
+import org.bukkit.*
 import org.bukkit.entity.Entity
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
 import org.bukkit.event.Event
+import org.bukkit.event.block.BlockPlaceEvent
+import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.entity.EntityEvent
-import org.bukkit.event.player.PlayerDropItemEvent
-import org.bukkit.event.player.PlayerInteractAtEntityEvent
-import org.bukkit.event.player.PlayerInteractEvent
+import org.bukkit.event.player.*
 import java.util.*
 
 // All in 1 file bc of kotlinx.serialization <3
-
 @Serializable
 sealed class Challenge {
     abstract val name: String
@@ -89,23 +86,41 @@ sealed class Challenge {
             var player = it.reflectMethod<Player>("getPlayer")
             // Try to get from entity event
             if (player == null) if ((it as EntityEvent).entity is Player) player = (it as EntityEvent).entity as Player
-            if (player?.challenge == this) it.callback()
+            if (player?.challenge == this) {
+                it.callback()
+            }
         }
     }
 
     fun Player.fail() {
         sendMessage("$PREFIX ${KColors.RED}You failed ${this@Challenge.displayName}")
-        teleport((if (bedSpawnLocation?.world == world) bedSpawnLocation else null) ?: world.spawnLocation)
+        tpSpawn()
         updateChallengeIfSurvival()
         renewInv()
+        playSound(Sound.BLOCK_GLASS_BREAK)
     }
 
+    fun Player.complete() {
+        sendMessage("$PREFIX ${KColors.GREEN}You completed ${this@Challenge.displayName}")
+        tpSpawn()
+        updateChallengeIfSurvival()
+        renewInv()
+        playSound(Sound.ENTITY_ARROW_HIT_PLAYER)
+    }
+
+    @JvmName("playerRenewInv")
+    fun Player.renewInv() = renewInv(this)
+    open fun renewInv(player: Player) = player.defaultInv()
+    open fun Player.tpSpawn() {
+        teleport((if (bedSpawnLocation?.world == world) bedSpawnLocation else null) ?: world.spawnLocation)
+    }
     open fun saveToConfig() {}
 
     @Transient open val hunger = false
     @Transient open val warpItems = true
+    /** @return true if setting the respawn location to this location is allowed */
+    open fun allowRespawnLocation(location: Location) = false
 }
-
 
 @Serializable
 sealed class CuboidChallenge : Challenge() {
@@ -223,7 +238,7 @@ class Damager(
 
 @SerialName("mlg")
 @Serializable
-class Mlg(
+sealed class Mlg(
     override val name: String,
     @Serializable(with = ChatColorSerializer::class) override val color: ChatColor,
     private val platformMaterial: Material = Material.SMOOTH_QUARTZ,
@@ -231,12 +246,36 @@ class Mlg(
     private val platformRadius: Double = 10.0,
     private val warpEntityType: EntityType = EntityType.PIG
 ) : CylinderChallenge() {
-    override val displayName: String get() = "$name Mlg"
+    private val bottomArea = cylinderRegion.minimumY + 5
+
+    init {
+        challengePlayerEvent<EntityDamageEvent> {
+            cancel()
+            if (entity.location.y <= bottomArea && damage > 0.0) (entity as Player).fail()
+        }
+        challengePlayerEvent<PlayerMoveEvent> {
+            if (from.y > bottomArea-1 && to.y <= bottomArea-1) taskRunLater(10) {
+                // Check if player still lives
+                if (player inChallenge this@Mlg && player.location.y <= bottomArea) player.complete()
+            }
+        }
+    }
+
+    override fun Player.tpSpawn() {
+        // If the bed spawn location is in this mlg, teleport the player there.
+        // Otherwise, teleport the player to the spawn location of this mlg.
+        teleport(if(bedSpawnLocation?.inRegion(this@Mlg) == true) bedSpawnLocation!! else spawn)
+    }
+
+    abstract val mlgItems: List<Material>
+    override val displayName get() = "$name Mlg"
+    override fun allowRespawnLocation(location: Location) = location.y > 10 && !location.blockBelow.isEmpty
 
     val spawn get() = cylinderRegion.center.location().apply {
         this.world = this@Mlg.world
         this.y = 101.0
     }
+
     @Transient lateinit var warpEntity: Entity
     override fun start() {
         super.start()
@@ -247,8 +286,7 @@ class Mlg(
         listen<PlayerInteractAtEntityEvent> {
             if (it.rightClicked == warpEntity) {
                 it.cancel()
-                it.player.teleport(spawn)
-                it.player.updateChallengeIfSurvival()
+                it.player.apply { teleport(spawn); updateChallengeIfSurvival() }
             }
         }
 
@@ -265,9 +303,43 @@ class Mlg(
         warpEntity.remove()
     }
 
+    override fun renewInv(player: Player) {
+        if (mlgItems.isEmpty() || mlgItems.size > 6) return
+        player.setItems(when (mlgItems.size) {
+            1 -> 4
+            2, 3 -> 3
+            4 -> 2
+            else -> 1
+        }, mlgItems)
+    }
+
+    private fun Player.setItems(startSlot: Int, items: List<Material>) {
+        for (slot in items.indices) inventory.setItem(slot+startSlot, items[slot].stack())
+    }
+
     private fun platformRegion(y: Int) = cylinderRegion.clone().apply {
         radius = Vector2.at(platformRadius, platformRadius)
         minimumY = y
         maximumY = y
     }
+}
+
+
+@SerialName("block_mlg")
+@Serializable
+class BlockMlg : Mlg("block", KColors.WHITE) {
+    init {
+        challengePlayerEvent<BlockPlaceEvent> {
+            if (block.location.y > 10 || WARP_ITEMS.any { block.type == it.type }) cancel()
+            // Remove block after 0.5 second
+            else block.removeAfter(10)
+        }
+        challengePlayerEvent<PlayerBucketEmptyEvent> {
+            if (block.location.y > 10 || WARP_ITEMS.any { block.type == it.type }) cancel()
+            // Remove block after 0.5 second
+            else block.removeAfter(10)
+        }
+    }
+
+    override val mlgItems = listOf(Material.WATER_BUCKET, Material.COBWEB, Material.SLIME_BLOCK, Material.SCAFFOLDING, Material.TWISTING_VINES, Material.HONEY_BLOCK)
 }

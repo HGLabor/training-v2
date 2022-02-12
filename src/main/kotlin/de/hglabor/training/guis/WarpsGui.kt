@@ -1,5 +1,6 @@
 package de.hglabor.training.guis
 
+import de.hglabor.training.defaultInv
 import de.hglabor.training.events.updateChallenge
 import de.hglabor.utils.kutils.cancel
 import de.hglabor.utils.kutils.world
@@ -41,6 +42,7 @@ fun Player.openWarpsGUI() = openGUI(kSpigotGUI(GUIType.THREE_BY_NINE) {
                      DAMAGER -> clickEvent.player.teleport(world("world")!!.spawnLocation)
                      MLG -> clickEvent.player.teleport(world("mlg")!!.spawnLocation)
                 }
+                clickEvent.player.defaultInv()
                 clickEvent.player.updateChallenge()
             }
         )

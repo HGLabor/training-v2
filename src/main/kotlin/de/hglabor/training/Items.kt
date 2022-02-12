@@ -1,6 +1,5 @@
 package de.hglabor.training
 
-import de.hglabor.training.challenge.Damager
 import de.hglabor.training.challenge.challenge
 import de.hglabor.training.guis.openWarpsGUI
 import de.hglabor.training.main.PREFIX
@@ -26,7 +25,8 @@ val SETTINGS = namedItem(Material.COMPARATOR,"${KColors.GRAY}${KColors.BOLD}Sett
 val WARP_ITEMS = listOf(WARPS, HUB, RESPAWN_ANCHOR, SETTINGS)
 val LOCATIONS =  listOf(0,     7,   8,              17)
 
-fun Player.renewInv() {
+
+fun Player.defaultInv() {
     closeInventory()
     clearInv()
     feedSaturate()
@@ -64,12 +64,11 @@ fun itemsListener() {
                         sendMessage("$PREFIX ${KColors.YELLOW}Reset respawn location.")
                     }
                     else if (isLeftClick) {
-                        if (challenge is Damager)
-                            sendMessage("$PREFIX ${KColors.RED}Here you can't update your respawn location.")
-                        else {
+                        if (challenge?.allowRespawnLocation(location) != false) {
                             setBedSpawnLocation(location, true)
                             sendMessage("$PREFIX ${KColors.GREEN}Updated respawn location.")
                         }
+                        else sendMessage("$PREFIX ${KColors.RED}Here you can't update your respawn location.")
                     }
                 }
             }
