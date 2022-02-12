@@ -17,8 +17,6 @@ bukkit {
     website = "https://github.com/HGLabor/training-v2"
     version = project.version.toString()
     apiVersion = "1.18"
-    libraries = listOf(
-    )
     softDepend = listOf("WorldEdit")
 }
 
