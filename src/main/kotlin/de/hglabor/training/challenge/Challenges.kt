@@ -1,4 +1,4 @@
-@file:Suppress("CanBeParameter", "SERIALIZER_TYPE_INCOMPATIBLE")
+@file:Suppress("CanBeParameter")
 
 package de.hglabor.training.challenge
 
@@ -130,7 +130,7 @@ sealed class CuboidChallenge : Challenge() {
     final override val world: World = world("world")!!
     val cuboidRegion get() = region as CuboidRegion
     // Default region
-    @Serializable(with = CuboidRegionSerializer::class)
+    @Serializable(with = CuboidRegionSerializer::class) @Suppress("SERIALIZER_TYPE_INCOMPATIBLE")
     override val region: Region = CuboidRegion(world.we(), defaultPos[0].we(), defaultPos[1].we())
 }
 
@@ -151,7 +151,7 @@ sealed class CylinderChallenge(
     final override val world = world("mlg")!!
     val cylinderRegion get() = region as CylinderRegion
 
-    @Serializable(with = CylinderRegionSerializer::class)
+    @Serializable(with = CylinderRegionSerializer::class) @Suppress("SERIALIZER_TYPE_INCOMPATIBLE")
     override val region: Region = CylinderRegion(world.we(), defaultCenter.we(), defaultRadius.vector2(), bottomY, topY)
 
     override fun start() {

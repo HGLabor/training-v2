@@ -18,11 +18,18 @@ fun commands() {
     command("training") {
         runs { player.sendTrainingVersion() }
         literal("version") { runs { player.sendTrainingVersion() } }
-        literal("reload") {
-            runs {
-                 Manager.reloadConfig()
-                 player.sendMessage("$PREFIX Reloaded config")
-                 challenges.forEach(Challenge::restart)
+        literal("config") {
+            literal("reload") {
+                runs {
+
+                    player.sendMessage("$PREFIX Reloaded config")
+                    challenges.forEach(Challenge::restart)
+                }
+            }
+            literal("save") {
+                runs {
+
+                }
             }
         }
         literal("challenge") {

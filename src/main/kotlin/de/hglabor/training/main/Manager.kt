@@ -41,16 +41,9 @@ class InternalMainClass : KSpigot() {
         INSTANCE = this
     }
 
-    private fun loadConfig() {
-        config.options().copyDefaults(true)
-        saveConfig()
-    }
-
     override fun startup() {
         Bukkit.createWorld(WorldCreator("mlg"))?.trainingGameRules() ?: throw RuntimeException("mlg World could not be created.")
         world("world")!!.trainingGameRules()
-
-        loadConfig()
 
         itemsListener()
         challengeListener()
