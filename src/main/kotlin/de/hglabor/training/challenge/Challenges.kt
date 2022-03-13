@@ -9,6 +9,7 @@ import com.sk89q.worldedit.regions.Region
 import de.hglabor.training.WARP_ITEMS
 import de.hglabor.training.defaultInv
 import de.hglabor.training.events.updateChallengeIfSurvival
+import de.hglabor.training.main.Manager
 import de.hglabor.training.main.PREFIX
 import de.hglabor.training.mechanics.checkSoupMechanic
 import de.hglabor.training.serialization.*
@@ -16,6 +17,8 @@ import de.hglabor.utils.kutils.*
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import net.axay.kspigot.chat.KColors
 import net.axay.kspigot.event.listen
 import net.axay.kspigot.extensions.bukkit.actionBar
@@ -194,10 +197,14 @@ class Damager(
         }
     }
 
+    override fun saveToConfig() {
+        Manager.configFile.writeText(Json.encodeToString(challenges))
+    }
+
     override fun start() {
         super.start()
 
-        val holoLoc = cuboidRegion.center.location().clone().add(0, 2, 0)
+        val holoLoc = cuboidRegion.center.location().clone().add(0, if(this.name.equals("lava", true)) 7 else 2, 0)
         hologram = hologram(holoLoc, "$color$displayName", "Damage: ${KColors.GOLD}${damage/2} ${KColors.RED}\u2764", "Period: ${KColors.GOLD}$period", world = world)
         task = task(period = period) {
             if(it.isCancelled) return@task
@@ -210,7 +217,11 @@ class Damager(
 
     override fun onEnter(player: Player) {
         player.saturation = 0F
-        player.maximumNoDamageTicks = 0 // Do this so periods < 20 work (e.g. impossible damager)
+        if(this.name.equals("lava", true)) {
+            player.maximumNoDamageTicks = 20 // Do this so periods < 20 work (e.g. impossible damager)
+        } else {
+            player.maximumNoDamageTicks = 0 // Do this so periods < 20 work (e.g. impossible damager)
+        }
         with(player.inventory) {
             setItem(0, Material.STONE_SWORD.stack())
             for (i in 1..35) setItem(i, Material.MUSHROOM_STEW.stack())
