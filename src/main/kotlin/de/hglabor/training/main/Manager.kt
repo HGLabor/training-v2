@@ -52,7 +52,8 @@ class InternalMainClass : KSpigot() {
 
         // Json deserialize
         if (!configFile.exists()) {
-            logger.warning("No existing config file")
+            logger.warning("No existing config file, creating one")
+            configFile.createNewFile()
             // Register default challenges
             registerChallenges(
                 Damager("noob", KColors.AQUA, 20, 4.0),
