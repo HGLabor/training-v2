@@ -217,11 +217,7 @@ class Damager(
 
     override fun onEnter(player: Player) {
         player.saturation = 0F
-        if(this.name.equals("lava", true)) {
-            player.maximumNoDamageTicks = 20 // Do this so periods < 20 work (e.g. impossible damager)
-        } else {
-            player.maximumNoDamageTicks = 0 // Do this so periods < 20 work (e.g. impossible damager)
-        }
+        player.maximumNoDamageTicks = period.toInt() // Do this so periods < 20 work (e.g. impossible damager)
         with(player.inventory) {
             setItem(0, Material.STONE_SWORD.stack())
             for (i in 1..35) setItem(i, Material.MUSHROOM_STEW.stack())
@@ -292,7 +288,7 @@ sealed class Mlg(
         super.start()
         warpEntity = world.spawnEntity(world.spawnLocation, warpEntityType).apply {
             statueAttributes()
-            customName = "$color$displayName"
+            @Suppress("DEPRECATION") customName = "$color$displayName"
         }
         listen<PlayerInteractAtEntityEvent> {
             if (it.rightClicked == warpEntity) {

@@ -30,6 +30,7 @@ fun Player.defaultInv() {
     closeInventory()
     clearInv()
     feedSaturate()
+    fireTicks = 0
     health = healthScale
     if (challenge?.warpItems != false) LOCATIONS.forEachIndexed { index, location -> inventory.setItem(location, WARP_ITEMS[index]) }
 }
