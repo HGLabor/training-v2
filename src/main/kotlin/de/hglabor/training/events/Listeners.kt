@@ -73,7 +73,7 @@ private fun joinQuitListener() {
         joinMessage = null
         player.defaultInv()
         player.teleport(player.location.world!!.spawnLocation)
-        player.bedSpawnLocation = player.location.world!!.spawnLocation
+        player.setBedSpawnLocation(player.location.world!!.spawnLocation, true)
         player.updateChallengeIfSurvival()
     }}
 
