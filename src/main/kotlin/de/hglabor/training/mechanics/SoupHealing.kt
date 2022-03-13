@@ -8,7 +8,7 @@ import org.bukkit.Material
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlot
 
-val soups = listOf(Material.MUSHROOM_STEW, Material.SUSPICIOUS_STEW, Material.BEETROOT_SOUP)
+val soups = listOf(Material.MUSHROOM_STEW, Material.SUSPICIOUS_STEW, Material.BEETROOT_SOUP) //TODO add option for player to select default material
 val bowl = Material.BOWL
 const val healAmount = 7
 const val feedAmount = 6
