@@ -8,7 +8,7 @@ import org.bukkit.Material
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlot
 
-val soups = listOf(Material.MUSHROOM_STEW, Material.SUSPICIOUS_STEW)
+val soups = listOf(Material.MUSHROOM_STEW, Material.SUSPICIOUS_STEW, Material.BEETROOT_SOUP)
 val bowl = Material.BOWL
 const val healAmount = 7
 const val feedAmount = 6
