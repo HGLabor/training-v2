@@ -399,11 +399,13 @@ class AimTraining : CuboidChallenge() {
         val chicken = world.spawn(locations.random(), Chicken::class.java)
         chicken.setGravity(false)
         chicken.setAI(false)
+        chicken.isGlowing = true
         chicken.customName(Component.text("chicken man"))
         chicken.isCustomNameVisible = true
         for (otherPlayers in net.axay.kspigot.extensions.onlinePlayers.stream().filter { it != player }.toList()) {
             (otherPlayers as CraftPlayer).handle.connection.send(ClientboundRemoveEntitiesPacket(chicken.entityId))
         }
+        player.playSound(player.location, Sound.ENTITY_PLAYER_LEVELUP, 1f, 0f)
         chickens[player] = chicken
     }
 
