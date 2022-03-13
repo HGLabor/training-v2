@@ -368,6 +368,7 @@ class AimTraining : CuboidChallenge() {
         Location(world, 65.7, 84.1, -38.1),
     )
     @Transient private var hologram: Hologram? = null
+    @Transient private var task: KSpigotRunnable? = null
     @Transient var chickens = hashMapOf<Player, Chicken>()
 
     override val name: String
@@ -384,6 +385,15 @@ class AimTraining : CuboidChallenge() {
 
         val holoLoc = cuboidRegion.center.location().clone().add(0, 2, 0)
         hologram = hologram(holoLoc, "$color$displayName", "Duration: ${KColors.GOLD}64 shots", world = world)
+        task = task(
+            period = 20
+        ) {
+            for (player in chickens.keys) {
+                for (otherPlayers in net.axay.kspigot.extensions.onlinePlayers.stream().filter { it != player }.toList()) {
+                    (otherPlayers as CraftPlayer).handle.connection.send(ClientboundRemoveEntitiesPacket(chickens[player]?.entityId ?: continue))
+                }
+            }
+        }
     }
 
     override fun onEnter(player: Player) {
@@ -417,6 +427,7 @@ class AimTraining : CuboidChallenge() {
     override fun stop() {
         super.stop()
         hologram?.remove()
+        task?.cancel()
         chickens.values.forEach {
             it.remove()
         }
