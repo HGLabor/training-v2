@@ -60,7 +60,7 @@ fun itemsListener() {
                 HUB -> if (isRightClick) sendToServer("lobby-1") // TODO not hardcoded
                 RESPAWN_ANCHOR -> {
                     if (isRightClick) {
-                        bedSpawnLocation = null
+                        bedSpawnLocation = player?.location?.world?.spawnLocation
                         sendMessage("$PREFIX ${KColors.YELLOW}Reset respawn location.")
                     }
                     else if (isLeftClick) {

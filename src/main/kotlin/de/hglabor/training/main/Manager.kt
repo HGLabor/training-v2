@@ -62,6 +62,7 @@ class InternalMainClass : KSpigot() {
                 Damager("Hard", KColors.RED, 10, 7.0),
                 Damager("Impossible", KColors.BLACK, 1, 1.0),
                 Damager("Lava", KColors.GOLD, 20, 0.0),
+                AimTraining(),
                 // TODO Crap Damager
                 BlockMlg() // TODO MLGs
             )

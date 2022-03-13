@@ -5,7 +5,9 @@ import de.hglabor.training.challenge.*
 import de.hglabor.training.events.updateChallengeIfSurvival
 import de.hglabor.training.main.Manager
 import de.hglabor.training.main.PREFIX
+import de.hglabor.training.main.json
 import de.hglabor.utils.kutils.*
+import kotlinx.serialization.encodeToString
 import net.axay.kspigot.chat.KColors
 import net.axay.kspigot.commands.argument
 import net.axay.kspigot.commands.command
@@ -16,6 +18,7 @@ import org.bukkit.entity.Player
 fun commands() {
     fun Player.sendTrainingVersion() = sendMessage("$PREFIX This server is running ${"Training-v2".col("green")} (${Manager.description.version.col("green")})")
     command("training") {
+        requires { it.bukkitSender.hasPermission("hglabor.training.admintools") }
         runs { player.sendTrainingVersion() }
         literal("version") { runs { player.sendTrainingVersion() } }
         literal("config") {
@@ -29,6 +32,12 @@ fun commands() {
             literal("save") {
                 runs {
 
+                }
+            }
+            literal("rewrite") {
+                runs {
+                    Manager.configFile.writeText(json.encodeToString(challenges))
+                    player.sendMessage("$PREFIX Rewrote config.")
                 }
             }
         }

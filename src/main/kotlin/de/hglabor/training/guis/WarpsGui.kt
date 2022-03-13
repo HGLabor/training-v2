@@ -13,6 +13,7 @@ import net.axay.kspigot.gui.openGUI
 import net.axay.kspigot.items.itemStack
 import net.axay.kspigot.items.meta
 import net.axay.kspigot.items.name
+import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
@@ -22,6 +23,9 @@ val DAMAGER = itemStack(Material.STONE_SWORD) {
 }
 val MLG = itemStack(Material.WATER_BUCKET) {
     meta { name = "${KColors.AQUA}Mlg" }
+}
+val AIM_TRAINING = itemStack(Material.BOW) {
+    meta { name = "${KColors.WHITE}Aim Training" }
 }
 
 fun Player.openWarpsGUI() = openGUI(kSpigotGUI(GUIType.THREE_BY_NINE) {
@@ -41,12 +45,13 @@ fun Player.openWarpsGUI() = openGUI(kSpigotGUI(GUIType.THREE_BY_NINE) {
                 when(element) {
                      DAMAGER -> clickEvent.player.teleport(world("world")!!.spawnLocation)
                      MLG -> clickEvent.player.teleport(world("mlg")!!.spawnLocation)
+                     AIM_TRAINING -> clickEvent.player.teleport(Location(world("world"), 44.5, 64.0, -40.5, -90f, 0f))
                 }
                 clickEvent.player.defaultInv()
                 clickEvent.player.updateChallenge()
             }
         )
 
-        compound.addContent(listOf(DAMAGER, MLG))
+        compound.addContent(listOf(DAMAGER, MLG, AIM_TRAINING))
     }
 })

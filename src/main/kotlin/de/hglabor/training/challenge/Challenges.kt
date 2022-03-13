@@ -11,6 +11,7 @@ import de.hglabor.training.defaultInv
 import de.hglabor.training.events.updateChallengeIfSurvival
 import de.hglabor.training.main.Manager
 import de.hglabor.training.main.PREFIX
+import de.hglabor.training.main.json
 import de.hglabor.training.mechanics.checkSoupMechanic
 import de.hglabor.training.serialization.*
 import de.hglabor.utils.kutils.*
@@ -26,8 +27,12 @@ import net.axay.kspigot.extensions.geometry.add
 import net.axay.kspigot.runnables.KSpigotRunnable
 import net.axay.kspigot.runnables.task
 import net.axay.kspigot.runnables.taskRunLater
+import net.kyori.adventure.text.Component
 import net.md_5.bungee.api.ChatColor
+import net.minecraft.network.protocol.game.ClientboundRemoveEntitiesPacket
 import org.bukkit.*
+import org.bukkit.craftbukkit.v1_18_R1.entity.CraftPlayer
+import org.bukkit.entity.Chicken
 import org.bukkit.entity.Entity
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
@@ -37,6 +42,8 @@ import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.entity.EntityEvent
 import org.bukkit.event.player.*
 import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 
 // All in 1 file bc of kotlinx.serialization <3
 @Serializable
@@ -117,7 +124,9 @@ sealed class Challenge {
     open fun Player.tpSpawn() {
         teleport((if (bedSpawnLocation?.world == world) bedSpawnLocation else null) ?: world.spawnLocation)
     }
-    open fun saveToConfig() {}
+    open fun saveToConfig() {
+        Manager.configFile.writeText(json.encodeToString(challenges))
+    }
 
     @Transient open val hunger = false
     @Transient open val warpItems = true
@@ -195,10 +204,6 @@ class Damager(
                 if (!(itemDrop.location inRegion this@Damager)) itemDrop.remove()
             }
         }
-    }
-
-    override fun saveToConfig() {
-        Manager.configFile.writeText(Json.encodeToString(challenges))
     }
 
     override fun start() {
@@ -353,4 +358,71 @@ class BlockMlg : Mlg("block", KColors.WHITE) {
     }
 
     override val mlgItems = listOf(Material.WATER_BUCKET, Material.COBWEB, Material.SLIME_BLOCK, Material.SCAFFOLDING, Material.TWISTING_VINES, Material.HONEY_BLOCK)
+}
+
+@SerialName("aim_training")
+@Serializable
+class AimTraining : CuboidChallenge() {
+
+    @Transient private var locations = listOf(
+        Location(world, 65.7, 74.75, -47.1),
+        Location(world, 65.7, 76.6, -41.1),
+        Location(world, 65.7, 80.73, -28.95),
+        Location(world, 65.7, 70.98, -37.1),
+        Location(world, 65.7, 84.1, -38.1),
+    )
+    @Transient private var hologram: Hologram? = null
+    @Transient var chickens = hashMapOf<Player, Chicken>()
+
+    override val name: String
+        get() = "aimtraining"
+
+    override val displayName: String
+        get() = "Aim Training"
+
+    override val color: ChatColor
+        get() = KColors.WHITE
+
+    override fun start() {
+        super.start()
+
+        val holoLoc = cuboidRegion.center.location().clone().add(0, 2, 0)
+        hologram = hologram(holoLoc, "$color$displayName", "Duration: ${KColors.GOLD}64 shots", world = world)
+    }
+
+    override fun onEnter(player: Player) {
+        player.saturation = 0F
+        with(player.inventory) {
+            setItem(0, Material.BOW.stack())
+            setItem(17, Material.ARROW.stack(64))
+        }
+        spawnChicken(player)
+    }
+
+    fun spawnChicken(player: Player) {
+        val chicken = world.spawn(locations.random(), Chicken::class.java)
+        chicken.setGravity(false)
+        chicken.setAI(false)
+        chicken.customName(Component.text("chicken man"))
+        chicken.isCustomNameVisible = true
+        for (otherPlayers in net.axay.kspigot.extensions.onlinePlayers.stream().filter { it != player }.toList()) {
+            (otherPlayers as CraftPlayer).handle.connection.send(ClientboundRemoveEntitiesPacket(chicken.entityId))
+        }
+        chickens[player] = chicken
+    }
+
+    override fun onLeave(player: Player) {
+        chickens[player]?.remove()
+        chickens.remove(player)
+    }
+
+    override fun stop() {
+        super.stop()
+        hologram?.remove()
+        chickens.values.forEach {
+            it.remove()
+        }
+        chickens.clear()
+    }
+
 }

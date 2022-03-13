@@ -1,5 +1,6 @@
 package de.hglabor.training.events
 
+import de.hglabor.training.challenge.AimTraining
 import de.hglabor.training.challenge.Mlg
 import de.hglabor.training.challenge.challenge
 import de.hglabor.training.defaultInv
@@ -15,6 +16,7 @@ import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.entity.FoodLevelChangeEvent
+import org.bukkit.event.entity.ProjectileHitEvent
 import org.bukkit.event.player.*
 
 fun mainListener() {
@@ -36,6 +38,31 @@ fun mainListener() {
             // Leave challenge if in not in survival
             else -> player.challenge = null
         }
+    }}
+
+    listen<ProjectileHitEvent> { with(it) {
+        if(hitEntity == null) {
+            return@listen
+        }
+        if(entity.shooter == null) {
+            return@listen
+        }
+        if(entity.shooter !is Player) {
+            return@listen
+        }
+        val player = entity.shooter as Player
+        if(player.challenge == null) {
+            return@listen
+        }
+        if(player.challenge !is AimTraining) {
+            return@listen
+        }
+        if (hitEntity?.uniqueId == player.uniqueId) {
+            return@listen
+        }
+        it.isCancelled = true
+        it.hitEntity?.remove()
+        (player.challenge as AimTraining).spawnChicken(player)
     }}
 }
 
