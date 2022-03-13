@@ -32,7 +32,7 @@ class InternalMainClass : KSpigot() {
         lateinit var INSTANCE: InternalMainClass; private set
     }
 
-    private val configFile by lazy {
+    val configFile by lazy {
         dataFolder.mkdir()
         File(dataFolder.path + "/challenges.json")
     }
@@ -56,11 +56,12 @@ class InternalMainClass : KSpigot() {
             configFile.createNewFile()
             // Register default challenges
             registerChallenges(
-                Damager("noob", KColors.AQUA, 20, 4.0),
-                Damager("easy", KColors.GREEN, 10, 4.0),
-                Damager("medium", KColors.ORANGE, 10, 5.0),
-                Damager("hard", KColors.RED, 10, 7.0),
-                Damager("impossible", KColors.BLACK, 1, 1.0),
+                Damager("Noob", KColors.AQUA, 20, 4.0),
+                Damager("Easy", KColors.GREEN, 10, 4.0),
+                Damager("Medium", KColors.ORANGE, 10, 5.0),
+                Damager("Hard", KColors.RED, 10, 7.0),
+                Damager("Impossible", KColors.BLACK, 1, 1.0),
+                Damager("Lava", KColors.GOLD, 20, 0.0),
                 // TODO Crap Damager
                 BlockMlg() // TODO MLGs
             )
