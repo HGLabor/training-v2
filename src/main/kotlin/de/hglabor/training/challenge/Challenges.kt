@@ -377,7 +377,7 @@ class AimTraining : CuboidChallenge() {
         get() = "Aim Training"
 
     override val color: ChatColor
-        get() = KColors.WHITE
+        get() = KColors.DEEPPINK
 
     override fun start() {
         super.start()

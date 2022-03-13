@@ -60,9 +60,13 @@ fun mainListener() {
         if (hitEntity?.uniqueId == player.uniqueId) {
             return@listen
         }
+        val aimTraining = (player.challenge as AimTraining)
         it.isCancelled = true
-        it.hitEntity?.remove()
-        (player.challenge as AimTraining).spawnChicken(player)
+        it.entity.remove()
+        if(aimTraining.chickens[player] == hitEntity) {
+            it.hitEntity?.remove()
+            aimTraining.spawnChicken(player)
+        }
     }}
 }
 
