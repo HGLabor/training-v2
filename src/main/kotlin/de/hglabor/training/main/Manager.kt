@@ -42,6 +42,7 @@ class InternalMainClass : KSpigot() {
     }
 
     override fun startup() {
+        Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord")
         Bukkit.createWorld(WorldCreator("mlg"))?.trainingGameRules() ?: throw RuntimeException("mlg World could not be created.")
         world("world")!!.trainingGameRules()
 

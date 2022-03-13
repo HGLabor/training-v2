@@ -57,7 +57,7 @@ fun itemsListener() {
         with (player) {
             when (item) {
                 WARPS -> if (isRightClick) openWarpsGUI()
-                HUB -> if (isRightClick) sendToServer("Lobby-1") // TODO not hardcoded
+                HUB -> if (isRightClick) sendToServer("lobby-1") // TODO not hardcoded
                 RESPAWN_ANCHOR -> {
                     if (isRightClick) {
                         bedSpawnLocation = null
