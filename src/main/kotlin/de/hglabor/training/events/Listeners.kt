@@ -13,6 +13,7 @@ import org.bukkit.event.EventPriority
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.entity.EntityDamageByEntityEvent
+import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.entity.FoodLevelChangeEvent
 import org.bukkit.event.player.*
 
@@ -20,6 +21,7 @@ fun mainListener() {
     joinQuitListener()
 
     cancelEvent<EntityDamageByEntityEvent>()
+    cancelEventWhen<EntityDamageEvent> { entity is Player && (entity as Player).challenge == null }
     cancelEventWhen<PlayerAttemptPickupItemEvent> { player.challenge == null && player.gameMode == GameMode.SURVIVAL }
     cancelEventWhen<FoodLevelChangeEvent> { (entity as Player).challenge?.hunger != true }
     cancelEventWhen<BlockBreakEvent> { !player.isCreative() }
