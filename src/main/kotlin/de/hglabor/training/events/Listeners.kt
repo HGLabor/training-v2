@@ -42,6 +42,7 @@ fun mainListener() {
 
     listen<ProjectileHitEvent> { with(it) {
         if(hitEntity == null) {
+            it.entity.remove()
             return@listen
         }
         if(entity.shooter == null) {
@@ -61,8 +62,8 @@ fun mainListener() {
             return@listen
         }
         val aimTraining = (player.challenge as AimTraining)
-        it.isCancelled = true
         it.entity.remove()
+        it.isCancelled = true
         if(aimTraining.chickens[player] == hitEntity) {
             it.hitEntity?.remove()
             aimTraining.spawnChicken(player)
