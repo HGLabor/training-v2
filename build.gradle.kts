@@ -34,6 +34,7 @@ dependencies {
     implementation("de.hglabor.utils:kutils:$kutils")
     compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.2.8")
     compileOnly("de.dytanic.cloudnet", "cloudnet-bridge", "3.4.0-SNAPSHOT")
+    compileOnly("de.dytanic.cloudnet", "cloudnet-wrapper-jvm", "3.4.0-SNAPSHOT")
 }
 
 tasks {
