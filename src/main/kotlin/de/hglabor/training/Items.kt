@@ -9,7 +9,6 @@ import de.hglabor.utils.kutils.*
 import net.axay.kspigot.chat.KColors
 import net.axay.kspigot.event.listen
 import net.axay.kspigot.extensions.bukkit.feedSaturate
-import net.axay.kspigot.extensions.bukkit.sendToServer
 import org.bukkit.GameMode
 import org.bukkit.Material
 import org.bukkit.entity.Player
