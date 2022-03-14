@@ -1,6 +1,7 @@
 package de.hglabor.training
 
-import de.dytanic.cloudnet.ext.bridge.BridgePlayerManager
+import de.dytanic.cloudnet.driver.CloudNetDriver
+import de.dytanic.cloudnet.ext.bridge.player.IPlayerManager
 import de.hglabor.training.challenge.challenge
 import de.hglabor.training.guis.openWarpsGUI
 import de.hglabor.training.main.PREFIX
@@ -25,6 +26,7 @@ val SETTINGS = namedItem(Material.COMPARATOR,"${KColors.GRAY}${KColors.BOLD}Sett
 val WARP_ITEMS =           listOf(WARPS, HUB, RESPAWN_ANCHOR, SETTINGS)
 val WARP_ITEM_LOCATIONS =  listOf(0,     7,   8,              17)
 
+private val playerManager = CloudNetDriver.getInstance().servicesRegistry.getFirstService(IPlayerManager::class.java)
 
 fun Player.defaultInv() {
     closeAndClearInv()
@@ -57,10 +59,7 @@ fun itemsListener() {
         with (player) {
             when (item) {
                 WARPS -> if (isRightClick) openWarpsGUI()
-                HUB -> if (isRightClick) cloudNet {
-                    @Suppress("DEPRECATION", "UnstableApiUsage") // hm
-                    BridgePlayerManager.getInstance().getPlayerExecutor(uniqueId).connectToFallback()
-                }
+                HUB -> if (isRightClick) playerManager.getPlayerExecutor(player?.uniqueId ?: return@listen).connectToFallback()
                 RESPAWN_ANCHOR -> {
                     if (isRightClick) {
                         bedSpawnLocation = player?.location?.world?.spawnLocation
