@@ -1,5 +1,6 @@
 package de.hglabor.training
 
+import de.dytanic.cloudnet.ext.bridge.BridgePlayerManager
 import de.hglabor.training.challenge.challenge
 import de.hglabor.training.guis.openWarpsGUI
 import de.hglabor.training.main.PREFIX
@@ -7,7 +8,6 @@ import de.hglabor.utils.kutils.*
 import net.axay.kspigot.chat.KColors
 import net.axay.kspigot.event.listen
 import net.axay.kspigot.extensions.bukkit.feedSaturate
-import net.axay.kspigot.extensions.bukkit.sendToServer
 import org.bukkit.GameMode
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -57,7 +57,10 @@ fun itemsListener() {
         with (player) {
             when (item) {
                 WARPS -> if (isRightClick) openWarpsGUI()
-                HUB -> if (isRightClick) sendToServer("lobby-1") // TODO not hardcoded
+                HUB -> if (isRightClick) cloudNet {
+                    @Suppress("DEPRECATION", "UnstableApiUsage") // hm
+                    BridgePlayerManager.getInstance().getPlayerExecutor(uniqueId).connectToFallback()
+                }
                 RESPAWN_ANCHOR -> {
                     if (isRightClick) {
                         bedSpawnLocation = player?.location?.world?.spawnLocation
@@ -75,6 +78,6 @@ fun itemsListener() {
         }
     }}
     listen<PlayerDropItemEvent> { with(it) {
-        if (itemDrop.itemStack.isWarpItem() || (player.challenge == null && player.gameMode == GameMode.SURVIVAL)) cancel()
+        if (itemDrop.itemStack.isWarpItem() || ((player.challenge == null || !player.challenge!!.allowDrop) && player.gameMode == GameMode.SURVIVAL)) cancel()
     }}
 }

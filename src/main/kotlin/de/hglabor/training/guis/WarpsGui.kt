@@ -1,7 +1,5 @@
 package de.hglabor.training.guis
 
-import de.hglabor.training.challenge.AimTraining
-import de.hglabor.training.challenge.challenge
 import de.hglabor.training.events.updateChallenge
 import de.hglabor.utils.kutils.cancel
 import de.hglabor.utils.kutils.world
@@ -46,7 +44,10 @@ fun Player.openWarpsGUI() = openGUI(kSpigotGUI(GUIType.THREE_BY_NINE) {
                 when(element) {
                      DAMAGER -> clickEvent.player.teleport(world("world")!!.spawnLocation)
                      MLG -> clickEvent.player.teleport(world("mlg")!!.spawnLocation)
-                     AIM_TRAINING -> if (clickEvent.player.challenge !is AimTraining) clickEvent.player.teleport(Location(world("world"), 44.5, 64.0, -40.5, -90f, -20f))
+                     AIM_TRAINING -> {
+                         clickEvent.player.teleport(Location(world("world"), 44.5, 64.0, -40.5, -90f, -30f))
+                         clickEvent.player.inventory.heldItemSlot = 4
+                     }
                 }
                 clickEvent.player.updateChallenge()
             }

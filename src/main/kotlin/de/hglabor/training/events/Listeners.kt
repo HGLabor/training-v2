@@ -41,6 +41,7 @@ fun mainListener() {
     }}
 
     listen<ProjectileHitEvent> {
+        it.cancel()
         it.entity.remove()
     }
 }

@@ -127,6 +127,7 @@ sealed class Challenge {
     }
 
     @Transient open val hunger = false
+    @Transient open val allowDrop = true
     @Transient open val warpItems = true
     /** @return true if setting the respawn location to this location is allowed */
     open fun allowRespawnLocation(location: Location) = false
@@ -358,6 +359,8 @@ class BlockMlg : Mlg("block", KColors.WHITE) {
 @SerialName("aim_training")
 @Serializable
 class AimTraining : CuboidChallenge() {
+    override val allowDrop = false
+
     init {
         listen<ProjectileHitEvent> { with(it) {
             if (entity.shooter !is Player || hitEntity == null) {
@@ -368,7 +371,6 @@ class AimTraining : CuboidChallenge() {
                 return@listen
             }
 
-            cancel()
             if (chickens[player]?.location?.blockLoc == hitEntity!!.location.blockLoc) {
                 chickens[player]?.remove()
                 spawnChicken(player)
@@ -412,6 +414,7 @@ class AimTraining : CuboidChallenge() {
         with(player.inventory) {
             setItem(4, Material.BOW.stack())
             setItem(9, Material.ARROW.stack(64))
+            heldItemSlot = 4
         }
         spawnChicken(player)
     }
