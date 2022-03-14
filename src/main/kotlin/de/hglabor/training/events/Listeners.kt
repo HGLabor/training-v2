@@ -40,35 +40,9 @@ fun mainListener() {
         }
     }}
 
-    listen<ProjectileHitEvent> { with(it) {
-        if(hitEntity == null) {
-            it.entity.remove()
-            return@listen
-        }
-        if(entity.shooter == null) {
-            return@listen
-        }
-        if(entity.shooter !is Player) {
-            return@listen
-        }
-        val player = entity.shooter as Player
-        if(player.challenge == null) {
-            return@listen
-        }
-        if(player.challenge !is AimTraining) {
-            return@listen
-        }
-        if (hitEntity?.uniqueId == player.uniqueId) {
-            return@listen
-        }
-        val aimTraining = (player.challenge as AimTraining)
+    listen<ProjectileHitEvent> {
         it.entity.remove()
-        it.isCancelled = true
-        if(aimTraining.chickens[player] == hitEntity) {
-            it.hitEntity?.remove()
-            aimTraining.spawnChicken(player)
-        }
-    }}
+    }
 }
 
 // Remove join and quit messages & handle join stuff

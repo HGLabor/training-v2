@@ -22,31 +22,30 @@ val HUB = namedItem(Material.HEART_OF_THE_SEA, "${KColors.GOLD}${KColors.BOLD}Hu
 val RESPAWN_ANCHOR = namedItem(Material.RESPAWN_ANCHOR,"${KColors.GREEN}Left click = new spawn ${KColors.RESET}| ${KColors.YELLOW}Right click = reset")
 val SETTINGS = namedItem(Material.COMPARATOR,"${KColors.GRAY}${KColors.BOLD}Settings")
 
-val WARP_ITEMS = listOf(WARPS, HUB, RESPAWN_ANCHOR, SETTINGS)
-val LOCATIONS =  listOf(0,     7,   8,              17)
+val WARP_ITEMS =           listOf(WARPS, HUB, RESPAWN_ANCHOR, SETTINGS)
+val WARP_ITEM_LOCATIONS =  listOf(0,     7,   8,              17)
 
 
 fun Player.defaultInv() {
-    closeInventory()
-    clearInv()
+    closeAndClearInv()
     feedSaturate()
     fireTicks = 0
     health = healthScale
-    if (challenge?.warpItems != false) LOCATIONS.forEachIndexed { index, location -> inventory.setItem(location, WARP_ITEMS[index]) }
+    if (challenge?.warpItems != false) WARP_ITEM_LOCATIONS.forEachIndexed { index, location -> inventory.setItem(location, WARP_ITEMS[index]) }
 }
 
 fun ItemStack?.isWarpItem() = WARP_ITEMS.any { this?.isSimilar(it) ?: return@any false }
 
 fun itemsListener() {
     listen<InventoryClickEvent> { with(it) {
-        if (hotbarButton in LOCATIONS) {
+        if (hotbarButton in WARP_ITEM_LOCATIONS) {
             cancel()
             return@listen
         }
         if (currentItem.isWarpItem()) {
             cancel()
             if (isRightClick && currentItem == SETTINGS) {
-                whoClicked.sendMessage("settings")
+                whoClicked.sendMessage("nö")
                 // TODO open settings
             }
         }

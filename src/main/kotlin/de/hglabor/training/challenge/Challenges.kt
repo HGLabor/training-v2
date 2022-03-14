@@ -19,11 +19,10 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import net.axay.kspigot.chat.KColors
 import net.axay.kspigot.event.listen
 import net.axay.kspigot.extensions.bukkit.actionBar
-import net.axay.kspigot.extensions.geometry.add
+import net.axay.kspigot.extensions.geometry.blockLoc
 import net.axay.kspigot.runnables.KSpigotRunnable
 import net.axay.kspigot.runnables.task
 import net.axay.kspigot.runnables.taskRunLater
@@ -40,10 +39,9 @@ import org.bukkit.event.Event
 import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.entity.EntityEvent
+import org.bukkit.event.entity.ProjectileHitEvent
 import org.bukkit.event.player.*
 import java.util.*
-import kotlin.collections.ArrayList
-import kotlin.collections.HashMap
 
 // All in 1 file bc of kotlinx.serialization <3
 @Serializable
@@ -209,7 +207,7 @@ class Damager(
     override fun start() {
         super.start()
 
-        val holoLoc = cuboidRegion.center.location().clone().add(0, if(this.name.equals("lava", true)) 7 else 2, 0)
+        val holoLoc = cuboidRegion.center.location().addY(if(this.name.equals("lava", true)) 7 else 2)
         hologram = hologram(holoLoc, "$color$displayName", "Damage: ${KColors.GOLD}${damage/2} ${KColors.RED}\u2764", "Period: ${KColors.GOLD}$period", world = world)
         task = task(period = period) {
             if(it.isCancelled) return@task
@@ -293,7 +291,8 @@ sealed class Mlg(
         super.start()
         warpEntity = world.spawnEntity(world.spawnLocation, warpEntityType).apply {
             statueAttributes()
-            @Suppress("DEPRECATION") customName = "$color$displayName"
+               @Suppress("DEPRECATION")
+            customName = "$color$displayName"
         }
         listen<PlayerInteractAtEntityEvent> {
             if (it.rightClicked == warpEntity) {
@@ -359,6 +358,23 @@ class BlockMlg : Mlg("block", KColors.WHITE) {
 @SerialName("aim_training")
 @Serializable
 class AimTraining : CuboidChallenge() {
+    init {
+        listen<ProjectileHitEvent> { with(it) {
+            if (entity.shooter !is Player || hitEntity == null) {
+                return@listen
+            }
+            val player = entity.shooter as Player
+            if (hitEntity?.uniqueId == player.uniqueId || player notInChallenge this@AimTraining) {
+                return@listen
+            }
+
+            cancel()
+            if (chickens[player]?.location?.blockLoc == hitEntity!!.location.blockLoc) {
+                chickens[player]?.remove()
+                spawnChicken(player)
+            }
+        }}
+    }
 
     @Transient private var locations = listOf(
         Location(world, 65.7, 74.75, -47.1),
@@ -371,19 +387,14 @@ class AimTraining : CuboidChallenge() {
     @Transient private var task: KSpigotRunnable? = null
     @Transient var chickens = hashMapOf<Player, Chicken>()
 
-    override val name: String
-        get() = "aimtraining"
-
-    override val displayName: String
-        get() = "Aim Training"
-
-    override val color: ChatColor
-        get() = KColors.DEEPPINK
+    override val name = "aimtraining"
+    override val displayName = "Aim Training"
+    override val color: ChatColor get() = KColors.DEEPPINK
 
     override fun start() {
         super.start()
 
-        val holoLoc = cuboidRegion.center.location().clone().add(0, 2, 0)
+        val holoLoc = cuboidRegion.center.location().addY(2)
         hologram = hologram(holoLoc, "$color$displayName", "Duration: ${KColors.GOLD}64 shots", world = world)
         task = task(
             period = 20
@@ -399,21 +410,20 @@ class AimTraining : CuboidChallenge() {
     override fun onEnter(player: Player) {
         player.saturation = 0F
         with(player.inventory) {
-            setItem(0, Material.BOW.stack())
-            setItem(17, Material.ARROW.stack(64))
+            setItem(4, Material.BOW.stack())
+            setItem(9, Material.ARROW.stack(64))
         }
         spawnChicken(player)
     }
 
-    fun spawnChicken(player: Player) {
+    private fun spawnChicken(player: Player) {
         val chicken = world.spawn(locations.random(), Chicken::class.java)
-        chicken.setGravity(false)
-        chicken.setAI(false)
+        chicken.statueAttributes()
         chicken.isGlowing = true
         chicken.customName(Component.text("chicken man"))
-        chicken.isCustomNameVisible = true
-        for (otherPlayers in net.axay.kspigot.extensions.onlinePlayers.stream().filter { it != player }.toList()) {
-            (otherPlayers as CraftPlayer).handle.connection.send(ClientboundRemoveEntitiesPacket(chicken.entityId))
+
+        for (otherPlayer in net.axay.kspigot.extensions.onlinePlayers.filter { it != player }) {
+            (otherPlayer as CraftPlayer).handle.connection.send(ClientboundRemoveEntitiesPacket(chicken.entityId))
         }
         player.playSound(player.location, Sound.ENTITY_PLAYER_LEVELUP, 1f, 0f)
         chickens[player] = chicken
@@ -428,9 +438,7 @@ class AimTraining : CuboidChallenge() {
         super.stop()
         hologram?.remove()
         task?.cancel()
-        chickens.values.forEach {
-            it.remove()
-        }
+        chickens.values.forEach(Chicken::remove)
         chickens.clear()
     }
 

@@ -9,22 +9,18 @@ import de.hglabor.training.main.json
 import de.hglabor.utils.kutils.*
 import kotlinx.serialization.encodeToString
 import net.axay.kspigot.chat.KColors
-import net.axay.kspigot.commands.argument
-import net.axay.kspigot.commands.command
-import net.axay.kspigot.commands.literal
-import net.axay.kspigot.commands.runs
+import net.axay.kspigot.commands.*
 import org.bukkit.entity.Player
 
 fun commands() {
     fun Player.sendTrainingVersion() = sendMessage("$PREFIX This server is running ${"Training-v2".col("green")} (${Manager.description.version.col("green")})")
     command("training") {
-        requires { it.bukkitSender.hasPermission("hglabor.training.admintools") }
+        requiresPermission("hglabor.training.admintools")
         runs { player.sendTrainingVersion() }
         literal("version") { runs { player.sendTrainingVersion() } }
         literal("config") {
             literal("reload") {
                 runs {
-
                     player.sendMessage("$PREFIX Reloaded config")
                     challenges.forEach(Challenge::restart)
                 }
