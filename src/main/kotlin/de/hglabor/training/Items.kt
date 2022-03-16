@@ -3,6 +3,7 @@ package de.hglabor.training
 import de.dytanic.cloudnet.driver.CloudNetDriver
 import de.dytanic.cloudnet.ext.bridge.player.IPlayerManager
 import de.hglabor.training.challenge.challenge
+import de.hglabor.training.events.updateChallengeIfSurvival
 import de.hglabor.training.guis.openWarpsGUI
 import de.hglabor.training.main.PREFIX
 import de.hglabor.utils.kutils.*
@@ -59,13 +60,14 @@ fun itemsListener() {
         with (player) {
             when (item) {
                 WARPS -> if (isRightClick) openWarpsGUI()
-                HUB -> if (isRightClick) playerManager.getPlayerExecutor(player?.uniqueId ?: return@listen).connectToFallback()
+                HUB -> if (isRightClick) playerManager.getPlayerExecutor(uniqueId).connectToFallback()
                 RESPAWN_ANCHOR -> {
                     if (isRightClick) {
-                        bedSpawnLocation = player?.location?.world?.spawnLocation
+                        setBedSpawnLocation(location.world.spawnLocation, true)
                         sendMessage("$PREFIX ${KColors.YELLOW}Reset respawn location.")
                     }
                     else if (isLeftClick) {
+                        updateChallengeIfSurvival()
                         if (challenge?.allowRespawnLocation(location) != false) {
                             setBedSpawnLocation(location, true)
                             sendMessage("$PREFIX ${KColors.GREEN}Updated respawn location.")

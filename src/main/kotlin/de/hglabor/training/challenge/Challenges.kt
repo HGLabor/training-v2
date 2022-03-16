@@ -208,7 +208,7 @@ class Damager(
     override fun start() {
         super.start()
 
-        val holoLoc = cuboidRegion.center.location().addY(if(this.name.equals("lava", true)) 7 else 2)
+        val holoLoc = cuboidRegion.center.location().addY(if(this.name.equals("lava", true)) 7 else 0)
         hologram = hologram(holoLoc, "$color$displayName", "Damage: ${KColors.GOLD}${damage/2} ${KColors.RED}\u2764", "Period: ${KColors.GOLD}$period", world = world)
         task = task(period = period) {
             if(it.isCancelled) return@task

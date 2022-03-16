@@ -8,6 +8,7 @@ import de.hglabor.utils.kutils.cancel
 import de.hglabor.utils.kutils.isCreative
 import net.axay.kspigot.event.listen
 import org.bukkit.GameMode
+import org.bukkit.craftbukkit.v1_18_R1.entity.CraftPlayer
 import org.bukkit.entity.Player
 import org.bukkit.event.Cancellable
 import org.bukkit.event.EventPriority
@@ -55,6 +56,9 @@ private fun joinQuitListener() {
         player.teleport(player.location.world!!.spawnLocation)
         player.setBedSpawnLocation(player.location.world!!.spawnLocation, true)
         player.updateChallengeIfSurvival()
+
+        // Remove invulnerability period after joining
+        (player as CraftPlayer).handle.spawnInvulnerableTime = 0
     }}
 
     listen<PlayerQuitEvent> { with(it) {
