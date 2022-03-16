@@ -1,6 +1,6 @@
 package de.hglabor.training.guis
 
-import de.hglabor.training.events.updateChallenge
+import de.hglabor.training.events.updateChallengeIfSurvival
 import de.hglabor.utils.kutils.cancel
 import de.hglabor.utils.kutils.world
 import net.axay.kspigot.chat.KColors
@@ -49,7 +49,7 @@ fun Player.openWarpsGUI() = openGUI(kSpigotGUI(GUIType.THREE_BY_NINE) {
                          clickEvent.player.inventory.heldItemSlot = 4
                      }
                 }
-                clickEvent.player.updateChallenge()
+                clickEvent.player.updateChallengeIfSurvival()
             }
         )
 
