@@ -53,6 +53,6 @@ fun Player.openWarpsGUI() = openGUI(kSpigotGUI(GUIType.THREE_BY_NINE) {
             }
         )
 
-        compound.addContent(listOf(DAMAGER, MLG, AIM_TRAINING))
+        compound.addContent(listOf(DAMAGER, /*MLG,*/ AIM_TRAINING))
     }
 })
