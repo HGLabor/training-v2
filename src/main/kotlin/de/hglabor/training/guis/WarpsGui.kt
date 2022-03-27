@@ -2,6 +2,7 @@ package de.hglabor.training.guis
 
 import de.hglabor.training.events.updateChallengeIfSurvival
 import de.hglabor.utils.kutils.cancel
+import de.hglabor.utils.kutils.namedItem
 import de.hglabor.utils.kutils.world
 import net.axay.kspigot.chat.KColors
 import net.axay.kspigot.gui.GUIType
@@ -9,23 +10,15 @@ import net.axay.kspigot.gui.Slots
 import net.axay.kspigot.gui.elements.GUIRectSpaceCompound
 import net.axay.kspigot.gui.kSpigotGUI
 import net.axay.kspigot.gui.openGUI
-import net.axay.kspigot.items.itemStack
-import net.axay.kspigot.items.meta
-import net.axay.kspigot.items.name
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
-val DAMAGER = itemStack(Material.STONE_SWORD) {
-    meta { name = "${KColors.ORANGERED}Damager" }
-}
-val MLG = itemStack(Material.WATER_BUCKET) {
-    meta { name = "${KColors.AQUA}Mlg" }
-}
-val AIM_TRAINING = itemStack(Material.BOW) {
-    meta { name = "${KColors.WHITE}Aim Training" }
-}
+val DAMAGER = namedItem(Material.STONE_SWORD, "${KColors.ORANGERED}Damager")
+val MLG = namedItem(Material.WATER_BUCKET, "${KColors.AQUA}Mlg")
+val AIM_TRAINING = namedItem(Material.BOW, "${KColors.WHITE}Aim Training")
+val CRAFTING = namedItem(Material.CRAFTING_TABLE, "${KColors.SADDLEBROWN}Crafting")
 
 fun Player.openWarpsGUI() = openGUI(kSpigotGUI(GUIType.THREE_BY_NINE) {
     title = "${KColors.AQUA}Warps"
@@ -41,6 +34,7 @@ fun Player.openWarpsGUI() = openGUI(kSpigotGUI(GUIType.THREE_BY_NINE) {
 
             onClick = { clickEvent, element ->
                 clickEvent.bukkitEvent.cancel()
+                // TODO configurable
                 when(element) {
                      DAMAGER -> clickEvent.player.teleport(world("world")!!.spawnLocation)
                      MLG -> clickEvent.player.teleport(world("mlg")!!.spawnLocation)
@@ -48,11 +42,14 @@ fun Player.openWarpsGUI() = openGUI(kSpigotGUI(GUIType.THREE_BY_NINE) {
                          clickEvent.player.teleport(Location(world("world"), 44.5, 64.0, -40.5, -90f, -30f))
                          clickEvent.player.inventory.heldItemSlot = 4
                      }
+                     CRAFTING -> {
+                         clickEvent.player.teleport(Location(world("world"), 27.5, 64.0, -0.5, -90f, 20f))
+                     }
                 }
                 clickEvent.player.updateChallengeIfSurvival()
             }
         )
 
-        compound.addContent(listOf(DAMAGER, /*MLG,*/ AIM_TRAINING))
+        compound.addContent(listOf(DAMAGER, /*MLG,*/ AIM_TRAINING, CRAFTING))
     }
 })

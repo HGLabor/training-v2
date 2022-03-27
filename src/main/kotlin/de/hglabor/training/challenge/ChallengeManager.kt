@@ -10,27 +10,15 @@ import org.bukkit.entity.Player
 
 var challenges = HashSet<Challenge>()
 
-private fun HashSet<Challenge>.getForPlayer(player: Player): Challenge? {
-    forEach {
-        if (it.players.contains(player.uniqueId)) return it
-    }
-    return null
-}
+private fun HashSet<Challenge>.getForPlayer(player: Player): Challenge? = firstOrNull { player.uniqueId in it.players }
 
-fun challenge(name: String): Challenge? {
-    challenges.forEach {
-        if (it.name == name) return it
-    }
-    return null
-}
+fun challenge(name: String): Challenge? = challenges.firstOrNull { it.name.equals(name, true) }
 
 val challengeNames: List<String> get() = run {
     val names = ArrayList<String>()
     challenges.forEach { names.add(it.name) }
     return names
 }
-
-fun registerChallenges(vararg toRegister: Challenge) = challenges.addAll(toRegister)
 
 fun Challenge?.addPlayer(player: Player) = this?.players?.add(player.uniqueId) ?: false
 infix fun Challenge?.contains(player: Player) = this?.players?.contains(player.uniqueId) ?: false

@@ -41,7 +41,9 @@ fun ItemStack?.isWarpItem() = WARP_ITEMS.any { this?.isSimilar(it) ?: return@any
 
 fun itemsListener() {
     listen<InventoryClickEvent> { with(it) {
-        if (hotbarButton in WARP_ITEM_LOCATIONS) {
+        if (whoClicked !is Player) return@listen
+
+        if ((whoClicked as Player).challenge?.warpItems != false && hotbarButton in WARP_ITEM_LOCATIONS) {
             cancel()
             return@listen
         }

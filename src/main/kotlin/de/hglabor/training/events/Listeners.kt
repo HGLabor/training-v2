@@ -1,6 +1,5 @@
 package de.hglabor.training.events
 
-import de.hglabor.training.challenge.AimTraining
 import de.hglabor.training.challenge.Mlg
 import de.hglabor.training.challenge.challenge
 import de.hglabor.training.defaultInv
@@ -29,7 +28,7 @@ fun mainListener() {
     cancelEventWhen<FoodLevelChangeEvent> { (entity as Player).challenge?.hunger != true }
     cancelEventWhen<BlockBreakEvent> { !player.isCreative() }
     cancelEventWhen<BlockPlaceEvent> { !player.isCreative() && player.challenge !is Mlg }
-    cancelEventWhen<PlayerInteractEvent> { !player.isCreative() && player.challenge !is Mlg && player.challenge !is AimTraining }
+    cancelEventWhen<PlayerInteractEvent> { !player.isCreative() && player.challenge?.allowInteraction(this) != true }
     cancelEventWhen<PlayerBucketEmptyEvent> { !player.isCreative() && player.challenge !is Mlg }
 
     listen<PlayerGameModeChangeEvent> { with(it) {
