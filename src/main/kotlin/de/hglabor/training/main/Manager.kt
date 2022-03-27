@@ -61,7 +61,7 @@ class InternalMainClass : KSpigot() {
             AimTraining(),
             CraftingChallenge(), // TODO config stuff
             // TODO Crap Damager
-            BlockMlg() // TODO MLGs
+            //BlockMlg() // TODO MLGs
         )
 
         // Json deserialize
