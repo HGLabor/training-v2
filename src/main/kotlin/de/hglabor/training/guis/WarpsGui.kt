@@ -1,6 +1,6 @@
 package de.hglabor.training.guis
 
-import de.hglabor.training.events.updateChallenge
+import de.hglabor.training.events.updateChallengeIfSurvival
 import de.hglabor.utils.kutils.cancel
 import de.hglabor.utils.kutils.namedItem
 import de.hglabor.utils.kutils.world
@@ -46,10 +46,10 @@ fun Player.openWarpsGUI() = openGUI(kSpigotGUI(GUIType.THREE_BY_NINE) {
                          clickEvent.player.teleport(Location(world("world"), 27.5, 64.0, -0.5, -90f, 20f))
                      }
                 }
-                clickEvent.player.updateChallenge()
+                clickEvent.player.updateChallengeIfSurvival()
             }
         )
 
-        compound.addContent(listOf(DAMAGER, MLG, AIM_TRAINING, CRAFTING))
+        compound.addContent(listOf(DAMAGER, /*MLG,*/ AIM_TRAINING, CRAFTING))
     }
 })
