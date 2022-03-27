@@ -487,7 +487,7 @@ class CraftingChallenge : CuboidChallenge() {
                 player.sendMessage("$PREFIX ${KColors.GREEN}You crafted " +
                         "${KColors.GOLD}${currentItem?.type} ${KColors.GREEN}in ${KColors.WHITE}$timeNeededFormat${KColors.GREEN}.")
                 player.playSound(Sound.ENTITY_PLAYER_LEVELUP, pitch = 0)
-                player.data = CraftingData()
+                player.data = CraftingData(finished = true)
             }
         }
     }
@@ -497,7 +497,8 @@ class CraftingChallenge : CuboidChallenge() {
     @Transient private val playerDatas = HashMap<UUID, CraftingData>()
     private inner class CraftingData(
         val item: Material? = null,
-        var startTime: Long? = null
+        var startTime: Long? = null,
+        var finished: Boolean = false
     )
     private var Player.data: CraftingData?
         get() = playerDatas[uniqueId]
@@ -518,6 +519,7 @@ class CraftingChallenge : CuboidChallenge() {
 
     @Transient private val duration: Int = 20
     override fun onEnter(player: Player) {
+        player.data = CraftingData()
         var seconds: Long = 0
 
         tasks[player.uniqueId] = task(period = 20L) {
@@ -550,6 +552,10 @@ class CraftingChallenge : CuboidChallenge() {
                 player.actionBar("Current Item: ${KColors.GOLD}${item.name}")
             }
             seconds++
+            if (player.data?.finished == true) {
+                if (seconds % duration < 18) seconds = 18
+                player.data?.finished = false
+            }
         }
     }
 
