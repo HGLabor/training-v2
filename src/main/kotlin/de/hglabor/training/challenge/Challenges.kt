@@ -22,6 +22,7 @@ import kotlinx.serialization.encodeToString
 import net.axay.kspigot.chat.KColors
 import net.axay.kspigot.event.listen
 import net.axay.kspigot.extensions.bukkit.actionBar
+import net.axay.kspigot.extensions.bukkit.title
 import net.axay.kspigot.extensions.geometry.blockLoc
 import net.axay.kspigot.runnables.KSpigotRunnable
 import net.axay.kspigot.runnables.task
@@ -40,10 +41,14 @@ import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.entity.EntityEvent
 import org.bukkit.event.entity.ProjectileHitEvent
+import org.bukkit.event.inventory.CraftItemEvent
+import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.player.*
 import java.util.*
+import kotlin.time.Duration.Companion.milliseconds
 
 // All in 1 file bc of kotlinx.serialization <3
+@Suppress("EqualsOrHashCode")
 @Serializable
 sealed class Challenge {
     abstract val name: String
@@ -92,6 +97,7 @@ sealed class Challenge {
         listen<T> {
             // Try to reflect directly
             var player = it.reflectMethod<Player>("getPlayer")
+            if (player == null) player = it.reflectMethod<Player>("getWhoClicked")
             // Try to get from entity event
             if (player == null) if ((it as EntityEvent).entity is Player) player = (it as EntityEvent).entity as Player
             if (player?.challenge == this) {
@@ -131,6 +137,10 @@ sealed class Challenge {
     @Transient open val warpItems = true
     /** @return true if setting the respawn location to this location is allowed */
     open fun allowRespawnLocation(location: Location) = false
+    /** @return true if interacting is allowed */
+    open fun allowInteraction(event: PlayerInteractEvent) = false
+
+    override fun equals(other: Any?) = other is Challenge && other.name.equals(name, true)
 }
 
 @Serializable
@@ -257,7 +267,7 @@ sealed class Mlg(
     private val platformRadius: Double = 10.0,
     private val warpEntityType: EntityType = EntityType.PIG
 ) : CylinderChallenge() {
-    private val bottomArea = cylinderRegion.minimumY + 5
+    @Transient private val bottomArea = cylinderRegion.minimumY + 5
 
     init {
         challengePlayerEvent<EntityDamageEvent> {
@@ -281,6 +291,7 @@ sealed class Mlg(
     abstract val mlgItems: List<Material>
     override val displayName get() = "$name Mlg"
     override fun allowRespawnLocation(location: Location) = location.y > 10 && !location.blockBelow.isEmpty
+    override fun allowInteraction(event: PlayerInteractEvent) = true
 
     val spawn get() = cylinderRegion.center.location().apply {
         this.world = this@Mlg.world
@@ -360,6 +371,7 @@ class BlockMlg : Mlg("block", KColors.WHITE) {
 @Serializable
 class AimTraining : CuboidChallenge() {
     override val allowDrop = false
+    override fun allowInteraction(event: PlayerInteractEvent) = true
 
     init {
         listen<ProjectileHitEvent> { with(it) {
@@ -443,6 +455,113 @@ class AimTraining : CuboidChallenge() {
         task?.cancel()
         chickens.values.forEach(Chicken::remove)
         chickens.clear()
+    }
+
+}
+
+@SerialName("crafting")
+@Serializable
+class CraftingChallenge : CuboidChallenge() {
+    override val allowDrop = false
+    override fun allowInteraction(event: PlayerInteractEvent) = event.player.data?.startTime != null
+    override val warpItems = false
+
+    @Transient val craftingUtils = CraftingUtils()
+
+    init {
+        challengePlayerEvent<InventoryClickEvent> {
+            if (whoClicked !is Player) return@challengePlayerEvent
+
+            val playerData = (whoClicked as Player).data ?: return@challengePlayerEvent
+            if (playerData.startTime == null) cancel()
+        }
+        challengePlayerEvent<CraftItemEvent> {
+            val player = whoClicked as Player
+            val data = player.data ?: return@challengePlayerEvent
+
+            if (currentItem?.type == data.item) {
+                val timeNeededMillis = System.currentTimeMillis() - (data.startTime ?: return@challengePlayerEvent)
+                val timeNeededFormat = timeNeededMillis.milliseconds.toComponents { seconds, nanoseconds ->
+                    "$seconds.${nanoseconds.toString().substring(0..2)}s"
+                }
+                player.sendMessage("$PREFIX ${KColors.GREEN}You crafted " +
+                        "${KColors.GOLD}${currentItem?.type} ${KColors.GREEN}in ${KColors.WHITE}$timeNeededFormat${KColors.GREEN}.")
+                player.playSound(Sound.ENTITY_PLAYER_LEVELUP, pitch = 0)
+                player.data = CraftingData()
+            }
+        }
+    }
+
+    @Transient private var hologram: Hologram? = null
+    @Transient private val tasks = HashMap<UUID, KSpigotRunnable?>()
+    @Transient private val playerDatas = HashMap<UUID, CraftingData>()
+    private inner class CraftingData(
+        val item: Material? = null,
+        var startTime: Long? = null
+    )
+    private var Player.data: CraftingData?
+        get() = playerDatas[uniqueId]
+        set(value) {
+            playerDatas[uniqueId] = value!!
+        }
+
+    override val name = "crafting"
+    override val displayName = "Crafting"
+    override val color: ChatColor get() = KColors.SADDLEBROWN
+
+    override fun start() {
+        super.start()
+
+        val holoLoc = cuboidRegion.center.location().addY(2)
+        hologram = hologram(holoLoc, "$color$displayName", world = world)
+    }
+
+    @Transient private val duration: Int = 20
+    override fun onEnter(player: Player) {
+        var seconds: Long = 0
+
+        tasks[player.uniqueId] = task(period = 20L) {
+            if (it.isCancelled) return@task
+            when (seconds % duration) {
+                0L -> {
+                    // Preparation
+                    player.closeAndClearInv()
+                    val item = craftingUtils.randomItem()
+                    player.data = CraftingData(item)
+
+                    player.playSound(Sound.ENTITY_EVOKER_CAST_SPELL, pitch = 0)
+                    player.sendMessage("$PREFIX ${KColors.YELLOW}Next item: ${KColors.GOLD}${item.name}")
+                    player.title("§6Crafting", "§cCraft (a) §b${item.name}", 20, 40, 20)
+                    repeat(9) { i ->
+                        player.inventory.setItem(i, namedItem(item, "${KColors.AQUA}${item.name}"))
+                    }
+                }
+                5L -> {
+                    // Crafting
+                    val data = player.data ?: return@task
+
+                    player.closeAndClearInv()
+                    player.playSound(Sound.BLOCK_BEEHIVE_ENTER, pitch = 0)
+                    data.item?.ingredients?.addToInv(player)
+                    data.startTime = System.currentTimeMillis()
+                }
+            }
+            player.data?.item?.let { item ->
+                player.actionBar("Current Item: ${KColors.GOLD}${item.name}")
+            }
+            seconds++
+        }
+    }
+
+    override fun onLeave(player: Player) {
+        tasks[player.uniqueId]?.cancel()
+        player.data = CraftingData()
+    }
+
+    override fun stop() {
+        super.stop()
+        hologram?.remove()
+        tasks.values.forEach { it?.cancel() }
     }
 
 }

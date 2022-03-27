@@ -25,6 +25,7 @@ val json = Json {
     encodeDefaults = true
     @Suppress("EXPERIMENTAL_API_USAGE")
     prettyPrintIndent = "  "
+    ignoreUnknownKeys = true
 }
 
 class InternalMainClass : KSpigot() {
@@ -50,25 +51,34 @@ class InternalMainClass : KSpigot() {
         challengeListener()
         regionListener()
 
+        val defaultChallenges = listOf(
+            Damager("Noob", KColors.AQUA, 20, 4.0),
+            Damager("Easy", KColors.GREEN, 10, 4.0),
+            Damager("Medium", KColors.ORANGE, 10, 5.0),
+            Damager("Hard", KColors.RED, 10, 7.0),
+            Damager("Impossible", KColors.BLACK, 1, 1.0),
+            Damager("Lava", KColors.GOLD, 20, 0.0),
+            AimTraining(),
+            CraftingChallenge(), // TODO config stuff
+            // TODO Crap Damager
+            BlockMlg() // TODO MLGs
+        )
+
         // Json deserialize
         if (!configFile.exists()) {
             logger.warning("No existing config file, creating one")
             configFile.createNewFile()
             // Register default challenges
-            registerChallenges(
-                Damager("Noob", KColors.AQUA, 20, 4.0),
-                Damager("Easy", KColors.GREEN, 10, 4.0),
-                Damager("Medium", KColors.ORANGE, 10, 5.0),
-                Damager("Hard", KColors.RED, 10, 7.0),
-                Damager("Impossible", KColors.BLACK, 1, 1.0),
-                Damager("Lava", KColors.GOLD, 20, 0.0),
-                AimTraining(),
-                // TODO Crap Damager
-                BlockMlg() // TODO MLGs
-            )
+            challenges += defaultChallenges
         }
         // Get challenges from json config
-        else challenges = json.decodeFromString(configFile.readText())
+        else {
+            challenges = json.decodeFromString(configFile.readText())
+            defaultChallenges.forEach {
+                // Add new challenges
+                if (challenges.none { filterChallenge -> filterChallenge == it }) challenges += it
+            }
+        }
 
         commands()
         challenges.forEach { it.start() }
