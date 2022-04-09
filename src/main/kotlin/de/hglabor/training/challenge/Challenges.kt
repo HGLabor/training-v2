@@ -32,10 +32,7 @@ import net.md_5.bungee.api.ChatColor
 import net.minecraft.network.protocol.game.ClientboundRemoveEntitiesPacket
 import org.bukkit.*
 import org.bukkit.craftbukkit.v1_18_R1.entity.CraftPlayer
-import org.bukkit.entity.Chicken
-import org.bukkit.entity.Entity
-import org.bukkit.entity.EntityType
-import org.bukkit.entity.Player
+import org.bukkit.entity.*
 import org.bukkit.event.Event
 import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.entity.EntityDamageEvent
@@ -61,6 +58,7 @@ sealed class Challenge {
 
     @Transient
     val players = HashSet<@Serializable(with = UUIDSerializer::class) UUID>()
+    val entities get() = world.entities.filter { it.location inRegion this }
     inline fun players(forEach: Player.() -> Unit) {
         players.forEach { forEach(Bukkit.getPlayer(it)!!) }
     }
@@ -213,6 +211,9 @@ class Damager(
                 if (!(itemDrop.location inRegion this@Damager)) itemDrop.remove()
             }
         }
+        challengePlayerEvent<PlayerAttemptPickupItemEvent> {
+            if (player.uniqueId != item.uniqueId) cancel()
+        }
     }
 
     override fun start() {
@@ -244,6 +245,9 @@ class Damager(
 
     override fun onLeave(player: Player) {
         player.maximumNoDamageTicks = 20
+        entities.filterIsInstance<Item>().forEach {
+            if (it.thrower == player.uniqueId) it.remove()
+        }
     }
 
     override fun stop() {
