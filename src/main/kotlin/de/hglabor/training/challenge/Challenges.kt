@@ -24,6 +24,7 @@ import net.axay.kspigot.event.listen
 import net.axay.kspigot.extensions.bukkit.actionBar
 import net.axay.kspigot.extensions.bukkit.title
 import net.axay.kspigot.extensions.geometry.blockLoc
+import net.axay.kspigot.extensions.geometry.vecXY
 import net.axay.kspigot.runnables.KSpigotRunnable
 import net.axay.kspigot.runnables.task
 import net.axay.kspigot.runnables.taskRunLater
@@ -31,6 +32,7 @@ import net.kyori.adventure.text.Component
 import net.md_5.bungee.api.ChatColor
 import net.minecraft.network.protocol.game.ClientboundRemoveEntitiesPacket
 import org.bukkit.*
+import org.bukkit.block.Block
 import org.bukkit.craftbukkit.v1_18_R1.entity.CraftPlayer
 import org.bukkit.entity.*
 import org.bukkit.event.Event
@@ -448,7 +450,7 @@ class AimTraining : CuboidChallenge() {
         for (otherPlayer in net.axay.kspigot.extensions.onlinePlayers.filter { it != player }) {
             (otherPlayer as CraftPlayer).handle.connection.send(ClientboundRemoveEntitiesPacket(chicken.entityId))
         }
-        player.playSound(player.location, Sound.ENTITY_PLAYER_LEVELUP, 1f, 0f)
+        player.playSound(Sound.ENTITY_PLAYER_LEVELUP, pitch = 0)
         chickens[player] = chicken
     }
 
@@ -578,4 +580,81 @@ class CraftingChallenge : CuboidChallenge() {
         tasks.values.forEach { it?.cancel() }
     }
 
+}
+
+@SerialName("parkour")
+@Serializable
+class ParkourChallenge : CuboidChallenge() {
+    override val allowDrop = false
+
+    init {
+        challengePlayerEvent<PlayerMoveEvent> {
+            val data = player.data ?: return@challengePlayerEvent
+            if (to.blockBelow == data.nextBlock) {
+                newBlock(player)
+                data.jumpCount++
+            }
+        }
+    }
+
+    @Transient private val playerDatas = HashMap<UUID, ParkourData>()
+    private inner class ParkourData(
+        var jumpCount: Int = 0,
+        var startTime: Long? = null,
+        var currentBlock: Block? = null,
+        var nextBlock: Block? = null
+    )
+    private var Player.data: ParkourData?
+        get() = playerDatas[uniqueId]
+        set(value) {
+            playerDatas[uniqueId] = value!!
+        }
+
+    override val name = "parkour"
+    override val displayName = "Jump And Run"
+    override val color: ChatColor get() = KColors.MEDIUMBLUE
+
+    override fun onEnter(player: Player) {
+        player.data = ParkourData()
+        player.data!!.startTime = System.currentTimeMillis()
+        newBlock(player)
+    }
+
+    private fun Block.parkourChangeType(player: Player, forMe: Material) {
+        type = Material.LIGHT_GRAY_CONCRETE
+        player.sendBlockChange(location, forMe.createBlockData())
+    }
+
+    private fun newBlock(player: Player) {
+        val data = player.data ?: return
+
+        data.currentBlock?.type = Material.AIR
+        data.currentBlock = data.nextBlock?.apply { parkourChangeType(player, Material.LIME_CONCRETE) }
+        player.playSound(Sound.ENTITY_PLAYER_LEVELUP, pitch = 0)
+        data.nextBlock = generateBlock(player).apply { parkourChangeType(player, Material.BLUE_CONCRETE) }
+    }
+
+    private val minX = 2
+    private val maxX = 3
+
+    private fun generateBlock(player: Player): Block {
+        val y = Math.random().let {
+            if (it <= 0.2) -1 else if (it <= 0.5) 0 else 1
+        }
+        var x = (minX .. maxX).random()
+        if (y != 1) x += (0..1).random()
+
+        val direction = vecXY(x, y)
+        direction.rotateAroundY(listOf(0.0, 90.0, 180.0, 270.0).random())
+        return player.location.blockBelow.location.add(direction).block.let {
+            if (it.isEmpty) it else generateBlock(player)
+        }
+    }
+
+    override fun onLeave(player: Player) {
+        val data = player.data ?: return
+        val timeNeeded = System.currentTimeMillis() - data.startTime!!
+        player.sendMessage("$PREFIX ${KColors.GREEN}You made ${KColors.GOLD}${data.jumpCount} jumps ${KColors.GREEN}in ${KColors.WHITE}${timeNeeded}s${KColors.GREEN}.")
+        player.data = ParkourData()
+    }
 }
