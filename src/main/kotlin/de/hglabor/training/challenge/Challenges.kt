@@ -435,8 +435,12 @@ class AimTraining : CuboidChallenge() {
         spawnChicken(player)
     }
 
+    private fun chickenLocation(player: Player): Location {
+        return locations.filter { it.blockLoc != chickens[player]?.location?.blockLoc }.random()
+    }
+
     private fun spawnChicken(player: Player) {
-        val chicken = world.spawn(locations.random(), Chicken::class.java)
+        val chicken = world.spawn(chickenLocation(player), Chicken::class.java)
         chicken.statueAttributes()
         chicken.isGlowing = true
         chicken.customName(Component.text("chicken man"))
