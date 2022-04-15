@@ -24,6 +24,7 @@ import net.axay.kspigot.event.listen
 import net.axay.kspigot.extensions.bukkit.actionBar
 import net.axay.kspigot.extensions.bukkit.title
 import net.axay.kspigot.extensions.geometry.blockLoc
+import net.axay.kspigot.extensions.geometry.vec
 import net.axay.kspigot.extensions.geometry.vecXY
 import net.axay.kspigot.runnables.KSpigotRunnable
 import net.axay.kspigot.runnables.task
@@ -44,6 +45,7 @@ import org.bukkit.event.inventory.CraftItemEvent
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.player.*
 import java.util.*
+import kotlin.math.PI
 import kotlin.time.Duration.Companion.milliseconds
 
 // All in 1 file bc of kotlinx.serialization <3
@@ -585,14 +587,17 @@ class CraftingChallenge : CuboidChallenge() {
 @SerialName("parkour")
 @Serializable
 class ParkourChallenge : CuboidChallenge() {
-    override val allowDrop = false
+    @Transient private val random = Random()
 
     init {
         challengePlayerEvent<PlayerMoveEvent> {
             val data = player.data ?: return@challengePlayerEvent
-            if (to.blockBelow == data.nextBlock) {
+            if (from.blockBelow == data.nextBlock) {
                 newBlock(player)
                 data.jumpCount++
+            }
+            else if (data.jumpCount > 0 && from.blockY == cuboidRegion.minimumY) {
+                player.fail()
             }
         }
     }
@@ -614,7 +619,20 @@ class ParkourChallenge : CuboidChallenge() {
     override val displayName = "Jump And Run"
     override val color: ChatColor get() = KColors.MEDIUMBLUE
 
+
+    private fun randomSpawnLocation(): Location {
+        val min = cuboidRegion.minimumPoint
+        val max = cuboidRegion.maximumPoint
+        val minX = min.blockX
+        val maxX = max.blockX
+        val minZ = min.blockZ
+        val maxZ = max.blockZ
+        return vec((minX..maxX).random(), cuboidRegion.minimumY, (minZ .. maxZ).random()).toLocation(world)
+    }
+
     override fun onEnter(player: Player) {
+        player.teleport(randomSpawnLocation())
+
         player.data = ParkourData()
         player.data!!.startTime = System.currentTimeMillis()
         newBlock(player)
@@ -622,7 +640,7 @@ class ParkourChallenge : CuboidChallenge() {
 
     private fun Block.parkourChangeType(player: Player, forMe: Material) {
         type = Material.LIGHT_GRAY_CONCRETE
-        player.sendBlockChange(location, forMe.createBlockData())
+        taskRunLater(2) { player.sendBlockChange(location, forMe.createBlockData()) }
     }
 
     private fun newBlock(player: Player) {
@@ -634,27 +652,28 @@ class ParkourChallenge : CuboidChallenge() {
         data.nextBlock = generateBlock(player).apply { parkourChangeType(player, Material.BLUE_CONCRETE) }
     }
 
-    private val minX = 2
-    private val maxX = 3
-
-    private fun generateBlock(player: Player): Block {
-        val y = Math.random().let {
+    private fun generateBlock(player: Player, startLocation: Location = player.standingBlock.location): Block {
+        val y = random.nextDouble().let {
             if (it <= 0.2) -1 else if (it <= 0.5) 0 else 1
         }
-        var x = (minX .. maxX).random()
+        var x = if (Random().nextBoolean()) 3 else 4
         if (y != 1) x += (0..1).random()
 
-        val direction = vecXY(x, y)
-        direction.rotateAroundY(listOf(0.0, 90.0, 180.0, 270.0).random())
-        return player.location.blockBelow.location.add(direction).block.let {
-            if (it.isEmpty) it else generateBlock(player)
+        val rotation = listOf(0.0, 0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 0.875).random()
+        val direction = vecXY(x, y).rotateAroundY(2 * PI * rotation)
+
+        return startLocation.clone().add(direction).block.let {
+            if (it.isEmpty && it.location inRegion this) it else generateBlock(player, startLocation)
         }
     }
 
     override fun onLeave(player: Player) {
         val data = player.data ?: return
         val timeNeeded = System.currentTimeMillis() - data.startTime!!
-        player.sendMessage("$PREFIX ${KColors.GREEN}You made ${KColors.GOLD}${data.jumpCount} jumps ${KColors.GREEN}in ${KColors.WHITE}${timeNeeded}s${KColors.GREEN}.")
+        player.sendMessage("$PREFIX ${KColors.GREEN}You made ${KColors.GOLD}${data.jumpCount} jumps ${KColors.GREEN}in ${KColors.WHITE}${timeNeeded/1000F}s${KColors.GREEN}.")
+
+        data.currentBlock?.type = Material.AIR
+        data.nextBlock?.type = Material.AIR
         player.data = ParkourData()
     }
 }

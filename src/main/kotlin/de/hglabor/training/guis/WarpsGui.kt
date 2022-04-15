@@ -19,6 +19,7 @@ val DAMAGER = namedItem(Material.STONE_SWORD, "${KColors.ORANGERED}Damager")
 val MLG = namedItem(Material.WATER_BUCKET, "${KColors.AQUA}Mlg")
 val AIM_TRAINING = namedItem(Material.BOW, "${KColors.WHITE}Aim Training")
 val CRAFTING = namedItem(Material.CRAFTING_TABLE, "${KColors.SADDLEBROWN}Crafting")
+val PARKOUR = namedItem(Material.DIAMOND_BOOTS, "${KColors.BLUE}Jump And Run")
 
 fun Player.openWarpsGUI() = openGUI(kSpigotGUI(GUIType.THREE_BY_NINE) {
     title = "${KColors.AQUA}Warps"
@@ -45,11 +46,14 @@ fun Player.openWarpsGUI() = openGUI(kSpigotGUI(GUIType.THREE_BY_NINE) {
                      CRAFTING -> {
                          clickEvent.player.teleport(Location(world("world"), 27.5, 64.0, -0.5, -90f, 20f))
                      }
+                     PARKOUR -> {
+                         clickEvent.player.teleport(Location(world("world"), -10.5, -64.0, -20.5, -180f, 0f))
+                     }
                 }
                 clickEvent.player.updateChallengeIfSurvival()
             }
         )
 
-        compound.addContent(listOf(DAMAGER, /*MLG,*/ AIM_TRAINING, CRAFTING))
+        compound.addContent(listOf(DAMAGER, /*MLG,*/ AIM_TRAINING, CRAFTING, PARKOUR))
     }
 })

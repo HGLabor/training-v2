@@ -60,6 +60,7 @@ class InternalMainClass : KSpigot() {
             Damager("Lava", KColors.GOLD, 20, 0.0),
             AimTraining(),
             CraftingChallenge(), // TODO config stuff
+            ParkourChallenge(), // TODO config stuff
             // TODO Crap Damager
             //BlockMlg() // TODO MLGs
         )
