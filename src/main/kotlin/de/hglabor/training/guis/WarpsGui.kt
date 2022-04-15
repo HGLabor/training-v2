@@ -47,7 +47,7 @@ fun Player.openWarpsGUI() = openGUI(kSpigotGUI(GUIType.THREE_BY_NINE) {
                          clickEvent.player.teleport(Location(world("world"), 27.5, 64.0, -0.5, -90f, 20f))
                      }
                      PARKOUR -> {
-                         clickEvent.player.teleport(Location(world("world"), -10.5, -64.0, -20.5, -180f, 0f))
+                         clickEvent.player.teleport(Location(world("world"), -10.5, 64.0, -20.5, -180f, 0f))
                      }
                 }
                 clickEvent.player.updateChallengeIfSurvival()
