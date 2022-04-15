@@ -593,8 +593,8 @@ class ParkourChallenge : CuboidChallenge() {
         challengePlayerEvent<PlayerMoveEvent> {
             val data = player.data ?: return@challengePlayerEvent
             if (from.blockBelow == data.nextBlock) {
-                newBlock(player)
                 data.jumpCount++
+                newBlock(player)
             }
             else if (data.jumpCount > 0 && from.blockY == cuboidRegion.minimumY) {
                 player.fail()
@@ -632,6 +632,7 @@ class ParkourChallenge : CuboidChallenge() {
 
     override fun onEnter(player: Player) {
         player.teleport(randomSpawnLocation())
+        player.sendMessage("$PREFIX ${KColors.LIGHTBLUE}Get ${KColors.GOLD}30 ${KColors.LIGHTBLUE}jumps to complete the challenge.")
 
         player.data = ParkourData()
         player.data!!.startTime = System.currentTimeMillis()
@@ -649,6 +650,8 @@ class ParkourChallenge : CuboidChallenge() {
         data.currentBlock?.type = Material.AIR
         data.currentBlock = data.nextBlock?.apply { parkourChangeType(player, Material.LIME_CONCRETE) }
         player.playSound(Sound.ENTITY_PLAYER_LEVELUP, pitch = 0)
+        if (data.jumpCount == 30) player.complete()
+
         data.nextBlock = generateBlock(player).apply { parkourChangeType(player, Material.BLUE_CONCRETE) }
     }
 
