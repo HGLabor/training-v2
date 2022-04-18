@@ -651,16 +651,15 @@ class ParkourChallenge : CuboidChallenge() {
         data.currentBlock = data.nextBlock?.apply { parkourChangeType(player, Material.LIME_CONCRETE) }
         player.playSound(Sound.ENTITY_PLAYER_LEVELUP, pitch = 0)
         if (data.jumpCount == 30) player.complete()
-
-        data.nextBlock = generateBlock(player).apply { parkourChangeType(player, Material.BLUE_CONCRETE) }
+        else data.nextBlock = generateBlock(player).apply { parkourChangeType(player, Material.BLUE_CONCRETE) }
     }
 
     private fun generateBlock(player: Player, startLocation: Location = player.standingBlock.location): Block {
         val y = random.nextDouble().let {
             if (it <= 0.2) -1 else if (it <= 0.5) 0 else 1
         }
-        var x = if (Random().nextBoolean()) 3 else 4
-        if (y != 1) x += (0..1).random()
+        var x = if (random.nextBoolean()) 3 else 4
+        if (y != 1) x += if (random.nextBoolean()) 0 else 1
 
         val rotation = listOf(0.0, 0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 0.875).random()
         val direction = vecXY(x, y).rotateAroundY(2 * PI * rotation)
