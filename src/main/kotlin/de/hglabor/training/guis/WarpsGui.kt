@@ -10,6 +10,7 @@ import net.axay.kspigot.gui.Slots
 import net.axay.kspigot.gui.elements.GUIRectSpaceCompound
 import net.axay.kspigot.gui.kSpigotGUI
 import net.axay.kspigot.gui.openGUI
+import net.kyori.adventure.text.Component.text
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -22,7 +23,7 @@ val CRAFTING = namedItem(Material.CRAFTING_TABLE, "${KColors.SADDLEBROWN}Craftin
 val PARKOUR = namedItem(Material.DIAMOND_BOOTS, "${KColors.BLUE}Jump And Run")
 
 fun Player.openWarpsGUI() = openGUI(kSpigotGUI(GUIType.THREE_BY_NINE) {
-    title = "${KColors.AQUA}Warps"
+    title = text("${KColors.AQUA}Warps")
 
     page(1) {
         placeholder(Slots.Border, ItemStack(Material.LIGHT_BLUE_STAINED_GLASS_PANE))

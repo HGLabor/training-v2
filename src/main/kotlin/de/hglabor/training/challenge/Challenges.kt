@@ -30,11 +30,12 @@ import net.axay.kspigot.runnables.KSpigotRunnable
 import net.axay.kspigot.runnables.task
 import net.axay.kspigot.runnables.taskRunLater
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.text
 import net.md_5.bungee.api.ChatColor
 import net.minecraft.network.protocol.game.ClientboundRemoveEntitiesPacket
 import org.bukkit.*
 import org.bukkit.block.Block
-import org.bukkit.craftbukkit.v1_18_R1.entity.CraftPlayer
+import org.bukkit.craftbukkit.v1_19_R1.entity.CraftPlayer
 import org.bukkit.entity.*
 import org.bukkit.event.Event
 import org.bukkit.event.block.BlockPlaceEvent
@@ -47,6 +48,8 @@ import org.bukkit.event.player.*
 import java.util.*
 import kotlin.math.PI
 import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.seconds
+import kotlin.time.toJavaDuration
 
 // All in 1 file bc of kotlinx.serialization <3
 @Suppress("EqualsOrHashCode")
@@ -197,7 +200,7 @@ private const val DEFAULT_DAMAGE = 4.0
 @Serializable
 class Damager(
     override val name: String,
-    @Serializable(with = ChatColorSerializer::class) override val color: ChatColor = KColors.WHITE,
+    @Serializable(with = ChatColorSerializer::class) override val color: ChatColor = ChatColor.WHITE,
     private val period: Long = DEFAULT_PERIOD,
     private val damage: Double = DEFAULT_DAMAGE
 ) : CuboidChallenge() {
@@ -358,7 +361,7 @@ sealed class Mlg(
 
 @SerialName("block_mlg")
 @Serializable
-class BlockMlg : Mlg("block", KColors.WHITE) {
+class BlockMlg : Mlg("block", ChatColor.WHITE) {
     init {
         challengePlayerEvent<BlockPlaceEvent> {
             if (block.location.y > 10 || WARP_ITEMS.any { block.type == it.type }) cancel()
@@ -411,7 +414,7 @@ class AimTraining : CuboidChallenge() {
 
     override val name = "aimtraining"
     override val displayName = "Aim Training"
-    override val color: ChatColor get() = KColors.DEEPPINK
+    override val color: ChatColor get() = ChatColor.LIGHT_PURPLE // TODO KColors.DEEPPINK
 
     override fun start() {
         super.start()
@@ -520,7 +523,7 @@ class CraftingChallenge : CuboidChallenge() {
 
     override val name = "crafting"
     override val displayName = "Crafting"
-    override val color: ChatColor get() = KColors.SADDLEBROWN
+    override val color: ChatColor get() = ChatColor.RED // TODO KColors.SADDLEBROWN
 
     override fun start() {
         super.start()
@@ -545,7 +548,7 @@ class CraftingChallenge : CuboidChallenge() {
 
                     player.playSound(Sound.ENTITY_EVOKER_CAST_SPELL, pitch = 0)
                     player.sendMessage("$PREFIX ${KColors.YELLOW}Next item: ${KColors.GOLD}${item.name}")
-                    player.title("§6Crafting", "§cCraft (a) §b${item.name}", 20, 40, 20)
+                    player.title(text("§6Crafting"), text("§cCraft (a) §b${item.name}"), 1.seconds.toJavaDuration(), 2.seconds.toJavaDuration(), 1.seconds.toJavaDuration())
                     repeat(9) { i ->
                         player.inventory.setItem(i, namedItem(item, "${KColors.AQUA}${item.name}"))
                     }
@@ -617,7 +620,7 @@ class ParkourChallenge : CuboidChallenge() {
 
     override val name = "parkour"
     override val displayName = "Jump And Run"
-    override val color: ChatColor get() = KColors.MEDIUMBLUE
+    override val color: ChatColor get() = ChatColor.DARK_AQUA //TODO KColors.MEDIUMBLUE
 
 
     private fun randomSpawnLocation(): Location {
