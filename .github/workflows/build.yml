@@ -1,10 +1,6 @@
 name: Build
 
-on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+on: push
 
 jobs:
   build:
@@ -31,4 +27,4 @@ jobs:
         automatic_release_tag: "latest"
         prerelease: true
         title: "Development Build"
-        files: build/libs/Training-*.jar
+        files: /^build/libs/Training((?!dev).)*.jar$/gm
