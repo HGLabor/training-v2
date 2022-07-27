@@ -27,4 +27,6 @@ jobs:
         automatic_release_tag: "latest"
         prerelease: true
         title: "Development Build"
-        files: /^build/libs/Training((?!dev).)*.jar$/gm
+        files: Training-*.jar
+    - name: Remove dev jar
+      run: rm Training-*dev*.jar
