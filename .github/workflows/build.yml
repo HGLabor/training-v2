@@ -20,6 +20,9 @@ jobs:
     - name: Build
       run: ./gradlew reobfJar
     
+    - name: Remove dev jar
+      run: rm build/libs/Training-*dev*.jar
+      
     - name: Release
       uses: "marvinpinto/action-automatic-releases@latest"
       with:
@@ -27,6 +30,4 @@ jobs:
         automatic_release_tag: "latest"
         prerelease: true
         title: "Development Build"
-        files: Training-*.jar
-    - name: Remove dev jar
-      run: rm Training-*dev*.jar
+        files: build/libs/Training-*.jar
