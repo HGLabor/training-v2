@@ -7,7 +7,7 @@ import de.hglabor.utils.kutils.cancel
 import de.hglabor.utils.kutils.isCreative
 import net.axay.kspigot.event.listen
 import org.bukkit.GameMode
-import org.bukkit.craftbukkit.v1_18_R1.entity.CraftPlayer
+import org.bukkit.craftbukkit.v1_19_R1.entity.CraftPlayer
 import org.bukkit.entity.Player
 import org.bukkit.event.Cancellable
 import org.bukkit.event.EventPriority

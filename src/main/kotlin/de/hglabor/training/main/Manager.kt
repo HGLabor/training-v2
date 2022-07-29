@@ -20,10 +20,10 @@ import java.io.File
 val Manager by lazy { InternalMainClass.INSTANCE }
 val PREFIX: String = "${ChatColor.DARK_GRAY}[${ChatColor.AQUA}Training${ChatColor.DARK_GRAY}]${ChatColor.WHITE}"
 
+@Suppress("OPT_IN_USAGE")
 val json = Json {
     prettyPrint = true
     encodeDefaults = true
-    @Suppress("EXPERIMENTAL_API_USAGE")
     prettyPrintIndent = "  "
     ignoreUnknownKeys = true
 }

@@ -1,15 +1,16 @@
 package de.hglabor.training
 
-import de.dytanic.cloudnet.driver.CloudNetDriver
-import de.dytanic.cloudnet.ext.bridge.player.IPlayerManager
 import de.hglabor.training.challenge.challenge
 import de.hglabor.training.events.updateChallengeIfSurvival
 import de.hglabor.training.guis.openWarpsGUI
-import de.hglabor.training.main.PREFIX
+import de.hglabor.training.utils.sendSimpleMessage
 import de.hglabor.utils.kutils.*
+import eu.cloudnetservice.driver.CloudNetDriver
 import net.axay.kspigot.chat.KColors
+import net.axay.kspigot.chat.literalText
 import net.axay.kspigot.event.listen
 import net.axay.kspigot.extensions.bukkit.feedSaturate
+import net.axay.kspigot.extensions.bukkit.sendToServer
 import org.bukkit.GameMode
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -19,15 +20,17 @@ import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.ItemStack
 
-val WARPS = namedItem(Material.NETHER_STAR, "${KColors.AQUA}${KColors.BOLD}Warps")
-val HUB = namedItem(Material.HEART_OF_THE_SEA, "${KColors.GOLD}${KColors.BOLD}Hub")
-val RESPAWN_ANCHOR = namedItem(Material.RESPAWN_ANCHOR,"${KColors.GREEN}Left click = new spawn ${KColors.RESET}| ${KColors.YELLOW}Right click = reset")
-val SETTINGS = namedItem(Material.COMPARATOR,"${KColors.GRAY}${KColors.BOLD}Settings")
+val WARPS = namedItem(Material.NETHER_STAR, literalText("Warps") { color = KColors.AQUA; bold = true })
+val HUB = namedItem(Material.HEART_OF_THE_SEA, literalText("Hub") { color = KColors.GOLD; bold = true })
+val RESPAWN_ANCHOR = namedItem(Material.RESPAWN_ANCHOR, literalText {
+    text("Left click = new spawn ") { color = KColors.GREEN }
+    text("|")
+    text(" Right click = reset") { color = KColors.YELLOW }
+})
+val SETTINGS = namedItem(Material.COMPARATOR, literalText("Settings") { color = KColors.GRAY; bold = true })
 
 val WARP_ITEMS =           listOf(WARPS, HUB, RESPAWN_ANCHOR, SETTINGS)
 val WARP_ITEM_LOCATIONS =  listOf(0,     7,   8,              17)
-
-private val playerManager = CloudNetDriver.getInstance().servicesRegistry.getFirstService(IPlayerManager::class.java)
 
 fun Player.defaultInv() {
     closeAndClearInv()
@@ -62,19 +65,22 @@ fun itemsListener() {
         with (player) {
             when (item) {
                 WARPS -> if (isRightClick) openWarpsGUI()
-                HUB -> if (isRightClick) playerManager.getPlayerExecutor(uniqueId).connectToFallback()
+                HUB -> if (isRightClick) {
+                    val lobbys = CloudNetDriver.instance<CloudNetDriver>().cloudServiceProvider().servicesByGroup("lobby")
+                    sendToServer(lobbys.random().name())
+                }
                 RESPAWN_ANCHOR -> {
                     if (isRightClick) {
                         setBedSpawnLocation(location.world.spawnLocation, true)
-                        sendMessage("$PREFIX ${KColors.YELLOW}Reset respawn location.")
+                        sendSimpleMessage("Reset respawn location", KColors.YELLOW)
                     }
                     else if (isLeftClick) {
                         updateChallengeIfSurvival()
                         if (challenge?.allowRespawnLocation(location) != false) {
                             setBedSpawnLocation(location, true)
-                            sendMessage("$PREFIX ${KColors.GREEN}Updated respawn location.")
+                            sendSimpleMessage("Updated respawn location", KColors.GREEN)
                         }
-                        else sendMessage("$PREFIX ${KColors.RED}Here you can't update your respawn location.")
+                        else sendSimpleMessage("Here you can't update your respawn location.", KColors.RED)
                     }
                 }
             }

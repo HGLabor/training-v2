@@ -9,6 +9,7 @@ import de.hglabor.training.main.json
 import de.hglabor.utils.kutils.*
 import kotlinx.serialization.encodeToString
 import net.axay.kspigot.chat.KColors
+import net.axay.kspigot.chat.literalText
 import net.axay.kspigot.commands.*
 import org.bukkit.entity.Player
 
@@ -40,7 +41,11 @@ fun commands() {
         literal("challenge") {
             literal("debug") {
                 runs {
-                    player.sendMessage("$PREFIX ${KColors.GRAY}You are in ${KColors.WHITE}${player.challenge}${KColors.GRAY}.")
+                    player.sendMessage(literalText(PREFIX) {
+                        text(" You are in ") { color = KColors.GRAY }
+                        text(player.challenge?.toString() ?: "no challenge")
+                        text(".") { color = KColors.GRAY }
+                    })
                 }
             }
             challenges.forEach { challenge ->
@@ -50,7 +55,11 @@ fun commands() {
                             runs {
                                 // Teleports the warp entity for this mlg to the players current position
                                 challenge.warpEntity.teleport(player.location)
-                                player.sendMessage("$PREFIX ${KColors.GREEN}Teleported warpentity of ${KColors.WHITE}${challenge.displayName} ${KColors.GREEN}to your position.")
+                                player.sendMessage(literalText(PREFIX) {
+                                    text(" Teleported warpentity of ") { color = KColors.GREEN }
+                                    text(challenge.displayName) { color = KColors.WHITE }
+                                    text(" to your position.") { color = KColors.GREEN }
+                                })
                             }
                         }
                     }
@@ -61,9 +70,12 @@ fun commands() {
                                     literal(pos) {
                                         runs {
                                             if (pos == "pos1") challenge.cuboidRegion.pos1 = player.location.we()
-                                            else if (pos == "pos2") challenge.cuboidRegion.pos2 =
-                                                player.location.we()
-                                            player.sendMessage("$PREFIX ${KColors.GREEN}Set $pos of challenge ${KColors.GRAY}${challenge.name} ${KColors.GREEN}to your current position.")
+                                            else if (pos == "pos2") challenge.cuboidRegion.pos2 = player.location.we()
+                                            player.sendMessage(literalText(PREFIX) {
+                                                text(" Set $pos of challenge ") { color = KColors.GREEN }
+                                                text(challenge.name) { color = KColors.GRAY }
+                                                text(" to your current position") { color = KColors.GREEN }
+                                            })
                                             onlinePlayers { updateChallengeIfSurvival() }
                                             challenge.saveToConfig()
                                             challenge.restart()
@@ -75,7 +87,11 @@ fun commands() {
                                 literal("center") {
                                     runs {
                                         challenge.cylinderRegion.setCenter(player.location.blockVector2())
-                                        player.sendMessage("$PREFIX ${KColors.GREEN}Set center of challenge ${KColors.GRAY}${challenge.name} ${KColors.GREEN}to your current position.")
+                                        player.sendMessage(literalText(PREFIX) {
+                                            text(" Set center of challenge ") { color = KColors.GREEN }
+                                            text(challenge.name) { color = KColors.GRAY }
+                                            text(" to your current position") { color = KColors.GREEN }
+                                        })
                                         challenge.saveToConfig()
                                         challenge.restart()
                                         onlinePlayers { updateChallengeIfSurvival() }
@@ -86,7 +102,13 @@ fun commands() {
                                         runs {
                                             val radius = getArgument<Int>("radius")
                                             challenge.cylinderRegion.radius = radius.vector2()
-                                            player.sendMessage("$PREFIX ${KColors.GREEN}Set radius of challenge ${KColors.GRAY}${challenge.name} ${KColors.GREEN}to ${KColors.WHITE}$radius.")
+                                            player.sendMessage(literalText(PREFIX) {
+                                                text(" Set radius of challenge ") { color = KColors.GREEN }
+                                                text(challenge.name) { color = KColors.GRAY }
+                                                text(" to ") { color = KColors.GREEN }
+                                                text(radius.toString()) { color = KColors.WHITE }
+                                                text(".") { color = KColors.GREEN }
+                                            })
                                             challenge.saveToConfig()
                                             challenge.restart()
                                             onlinePlayers { updateChallengeIfSurvival() }

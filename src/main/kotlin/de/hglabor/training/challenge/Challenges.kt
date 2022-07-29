@@ -14,14 +14,16 @@ import de.hglabor.training.main.PREFIX
 import de.hglabor.training.main.json
 import de.hglabor.training.mechanics.checkSoupMechanic
 import de.hglabor.training.serialization.*
+import de.hglabor.training.utils.sendSimpleMessage
 import de.hglabor.utils.kutils.*
+import de.hglabor.utils.kutils.serialization.LocationSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 import kotlinx.serialization.encodeToString
 import net.axay.kspigot.chat.KColors
+import net.axay.kspigot.chat.literalText
 import net.axay.kspigot.event.listen
-import net.axay.kspigot.extensions.bukkit.actionBar
 import net.axay.kspigot.extensions.bukkit.title
 import net.axay.kspigot.extensions.geometry.blockLoc
 import net.axay.kspigot.extensions.geometry.vec
@@ -29,12 +31,12 @@ import net.axay.kspigot.extensions.geometry.vecXY
 import net.axay.kspigot.runnables.KSpigotRunnable
 import net.axay.kspigot.runnables.task
 import net.axay.kspigot.runnables.taskRunLater
-import net.kyori.adventure.text.Component
-import net.md_5.bungee.api.ChatColor
+import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.format.TextColor
 import net.minecraft.network.protocol.game.ClientboundRemoveEntitiesPacket
 import org.bukkit.*
 import org.bukkit.block.Block
-import org.bukkit.craftbukkit.v1_18_R1.entity.CraftPlayer
+import org.bukkit.craftbukkit.v1_19_R1.entity.CraftPlayer
 import org.bukkit.entity.*
 import org.bukkit.event.Event
 import org.bukkit.event.block.BlockPlaceEvent
@@ -47,6 +49,8 @@ import org.bukkit.event.player.*
 import java.util.*
 import kotlin.math.PI
 import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.seconds
+import kotlin.time.toJavaDuration
 
 // All in 1 file bc of kotlinx.serialization <3
 @Suppress("EqualsOrHashCode")
@@ -55,8 +59,7 @@ sealed class Challenge {
     abstract val name: String
     @Serializable(with = WorldSerializer::class)
     abstract val world: World
-    @Serializable(with = ChatColorSerializer::class)
-    abstract val color: ChatColor
+    @Serializable(with = TextColorSerializer::class) abstract val color: TextColor
 
     abstract val region: Region
 
@@ -75,7 +78,7 @@ sealed class Challenge {
     internal fun enter(player: Player) {
         players.add(player.uniqueId)
         player.renewInv()
-        player.actionBar("${KColors.GREEN}You entered $displayName")
+        player.sendActionBar(literalText("You entered $displayName") { color = KColors.GREEN })
         onEnter(player)
     }
     protected open fun onEnter(player: Player) {}
@@ -83,7 +86,7 @@ sealed class Challenge {
     internal fun leave(player: Player) {
         players.remove(player.uniqueId)
         player.renewInv()
-        player.actionBar("${KColors.RED}You left $displayName")
+        player.sendActionBar(literalText("You left $displayName") { color = KColors.RED })
         onLeave(player)
     }
 
@@ -109,7 +112,7 @@ sealed class Challenge {
     }
 
     fun Player.fail() {
-        sendMessage("$PREFIX ${KColors.RED}You failed ${this@Challenge.displayName}")
+        sendSimpleMessage("You failed ${this@Challenge.displayName}", KColors.RED)
         tpSpawn()
         updateChallengeIfSurvival()
         renewInv()
@@ -117,7 +120,7 @@ sealed class Challenge {
     }
 
     fun Player.complete() {
-        sendMessage("$PREFIX ${KColors.GREEN}You completed ${this@Challenge.displayName}")
+        sendSimpleMessage("You completed ${this@Challenge.displayName}", KColors.GREEN)
         tpSpawn()
         updateChallengeIfSurvival()
         renewInv()
@@ -197,7 +200,7 @@ private const val DEFAULT_DAMAGE = 4.0
 @Serializable
 class Damager(
     override val name: String,
-    @Serializable(with = ChatColorSerializer::class) override val color: ChatColor = KColors.WHITE,
+    @Serializable(with = TextColorSerializer::class) override val color: TextColor = KColors.WHITE,
     private val period: Long = DEFAULT_PERIOD,
     private val damage: Double = DEFAULT_DAMAGE
 ) : CuboidChallenge() {
@@ -224,7 +227,18 @@ class Damager(
         super.start()
 
         val holoLoc = cuboidRegion.center.location().addY(if(this.name.equals("lava", true)) 7 else 0)
-        hologram = hologram(holoLoc, "$color$displayName", "Damage: ${KColors.GOLD}${damage/2} ${KColors.RED}\u2764", "Period: ${KColors.GOLD}$period", world = world)
+        hologram = hologram(
+            holoLoc,
+            literalText(displayName) { color = this@Damager.color },
+            literalText("Damage: ") {
+                text("${damage/2} ") { color = KColors.GOLD }
+                text("\u2764") { color = KColors.RED }
+            },
+            literalText("Period: ") {
+                text(period.toString()) { color = KColors.GOLD }
+            },
+            world = world
+        )
         task = task(period = period) {
             if(it.isCancelled) return@task
             players {
@@ -269,7 +283,7 @@ class Damager(
 @Serializable
 sealed class Mlg(
     override val name: String,
-    @Serializable(with = ChatColorSerializer::class) override val color: ChatColor,
+    @Serializable(with = TextColorSerializer::class) override val color: TextColor,
     private val platformMaterial: Material = Material.SMOOTH_QUARTZ,
     private val platformHeights: List<Int> = listOf(25, 50, 100, 150, 200, 250),
     private val platformRadius: Double = 10.0,
@@ -355,7 +369,6 @@ sealed class Mlg(
     }
 }
 
-
 @SerialName("block_mlg")
 @Serializable
 class BlockMlg : Mlg("block", KColors.WHITE) {
@@ -380,6 +393,8 @@ class BlockMlg : Mlg("block", KColors.WHITE) {
 class AimTraining : CuboidChallenge() {
     override val allowDrop = false
     override fun allowInteraction(event: PlayerInteractEvent) = true
+
+    val spawnLocation: @Serializable(with = LocationSerializer::class) Location = Location(world, 44.5, 64.0, -40.5, -90f, -30f)
 
     init {
         listen<ProjectileHitEvent> { with(it) {
@@ -411,13 +426,20 @@ class AimTraining : CuboidChallenge() {
 
     override val name = "aimtraining"
     override val displayName = "Aim Training"
-    override val color: ChatColor get() = KColors.DEEPPINK
+    @Serializable(with = TextColorSerializer::class) override val color: TextColor get() = KColors.DEEPPINK
 
     override fun start() {
         super.start()
 
         val holoLoc = cuboidRegion.center.location().addY(2)
-        hologram = hologram(holoLoc, "$color$displayName", "Duration: ${KColors.GOLD}64 shots", world = world)
+        hologram = hologram(
+            holoLoc,
+            literalText(displayName) { color = this@AimTraining.color },
+            literalText("Duration: ") {
+                text("64 shots") { color = KColors.GOLD }
+            },
+            world = world
+        )
         task = task(
             period = 20
         ) {
@@ -447,7 +469,7 @@ class AimTraining : CuboidChallenge() {
         val chicken = world.spawn(chickenLocation(player), Chicken::class.java)
         chicken.statueAttributes()
         chicken.isGlowing = true
-        chicken.customName(Component.text("chicken man"))
+        chicken.customName(literalText("chicken man"))
 
         for (otherPlayer in net.axay.kspigot.extensions.onlinePlayers.filter { it != player }) {
             (otherPlayer as CraftPlayer).handle.connection.send(ClientboundRemoveEntitiesPacket(chicken.entityId))
@@ -478,6 +500,8 @@ class CraftingChallenge : CuboidChallenge() {
     override fun allowInteraction(event: PlayerInteractEvent) = event.player.data?.startTime != null
     override val warpItems = false
 
+    val spawnLocation: @Serializable(with = LocationSerializer::class) Location = Location(world, 27.5, 64.0, -0.5, -90f, 20f)
+
     @Transient val craftingUtils = CraftingUtils()
 
     init {
@@ -496,8 +520,13 @@ class CraftingChallenge : CuboidChallenge() {
                 val timeNeededFormat = timeNeededMillis.milliseconds.toComponents { seconds, nanoseconds ->
                     "$seconds.${nanoseconds.toString().substring(0..2)}s"
                 }
-                player.sendMessage("$PREFIX ${KColors.GREEN}You crafted " +
-                        "${KColors.GOLD}${currentItem?.type} ${KColors.GREEN}in ${KColors.WHITE}$timeNeededFormat${KColors.GREEN}.")
+                player.sendMessage(literalText(PREFIX) {
+                    text(" You crafted ") { color = KColors.GREEN }
+                    text(currentItem?.type.toString()) { color = KColors.GOLD }
+                    text(" in ") { color = KColors.GREEN }
+                    text(timeNeededFormat) { color = KColors.WHITE }
+                    text(".") { color = KColors.GREEN }
+                })
                 player.playSound(Sound.ENTITY_PLAYER_LEVELUP, pitch = 0)
                 player.data = CraftingData(finished = true)
             }
@@ -520,13 +549,13 @@ class CraftingChallenge : CuboidChallenge() {
 
     override val name = "crafting"
     override val displayName = "Crafting"
-    override val color: ChatColor get() = KColors.SADDLEBROWN
+    @Serializable(with = TextColorSerializer::class) override val color: TextColor get() = KColors.SADDLEBROWN
 
     override fun start() {
         super.start()
 
         val holoLoc = cuboidRegion.center.location().addY(2)
-        hologram = hologram(holoLoc, "$color$displayName", world = world)
+        hologram = hologram(holoLoc, literalText(displayName) { color = this@CraftingChallenge.color }, world = world)
     }
 
     @Transient private val duration: Int = 20
@@ -544,10 +573,13 @@ class CraftingChallenge : CuboidChallenge() {
                     player.data = CraftingData(item)
 
                     player.playSound(Sound.ENTITY_EVOKER_CAST_SPELL, pitch = 0)
-                    player.sendMessage("$PREFIX ${KColors.YELLOW}Next item: ${KColors.GOLD}${item.name}")
-                    player.title("§6Crafting", "§cCraft (a) §b${item.name}", 20, 40, 20)
+                    player.sendMessage(literalText(PREFIX) {
+                        text(" Next item: ") { color = KColors.YELLOW }
+                        text(item.name) { color = KColors.GOLD }
+                    })
+                    player.title(text("§6Crafting"), text("§cCraft (a) §b${item.name}"), 1.seconds.toJavaDuration(), 2.seconds.toJavaDuration(), 1.seconds.toJavaDuration())
                     repeat(9) { i ->
-                        player.inventory.setItem(i, namedItem(item, "${KColors.AQUA}${item.name}"))
+                        player.inventory.setItem(i, namedItem(item, literalText(item.name) { color = KColors.AQUA }))
                     }
                 }
                 5L -> {
@@ -561,7 +593,9 @@ class CraftingChallenge : CuboidChallenge() {
                 }
             }
             player.data?.item?.let { item ->
-                player.actionBar("Current Item: ${KColors.GOLD}${item.name}")
+                player.sendActionBar(literalText("Current item: ") {
+                    text(item.name) { color = KColors.GOLD }
+                })
             }
             seconds++
             if (player.data?.finished == true) {
@@ -617,7 +651,7 @@ class ParkourChallenge : CuboidChallenge() {
 
     override val name = "parkour"
     override val displayName = "Jump And Run"
-    override val color: ChatColor get() = KColors.MEDIUMBLUE
+    @Serializable(with = TextColorSerializer::class) override val color: TextColor get() = KColors.MEDIUMBLUE
 
 
     private fun randomSpawnLocation(): Location {
@@ -632,7 +666,11 @@ class ParkourChallenge : CuboidChallenge() {
 
     override fun onEnter(player: Player) {
         player.teleport(randomSpawnLocation())
-        player.sendMessage("$PREFIX ${KColors.LIGHTBLUE}Get ${KColors.GOLD}30 ${KColors.LIGHTBLUE}jumps to complete the challenge.")
+        player.sendMessage(literalText(PREFIX) {
+            text(" Get ") { color = KColors.LIGHTBLUE }
+            text("30") { color = KColors.GOLD }
+            text(" jumps to complete the challenge.") { color = KColors.LIGHTBLUE }
+        })
 
         player.data = ParkourData()
         player.data!!.startTime = System.currentTimeMillis()
@@ -672,7 +710,13 @@ class ParkourChallenge : CuboidChallenge() {
     override fun onLeave(player: Player) {
         val data = player.data ?: return
         val timeNeeded = System.currentTimeMillis() - data.startTime!!
-        player.sendMessage("$PREFIX ${KColors.GREEN}You made ${KColors.GOLD}${data.jumpCount} jumps ${KColors.GREEN}in ${KColors.WHITE}${timeNeeded/1000F}s${KColors.GREEN}.")
+        player.sendMessage(literalText(PREFIX) {
+            text(" You made ") { color = KColors.GREEN }
+            text("${data.jumpCount} jumps") { color = KColors.GOLD }
+            text(" in ") { color = KColors.GREEN }
+            text("${timeNeeded/1000F}s") { color = KColors.WHITE }
+            text(".") { color = KColors.WHITE }
+        })
 
         data.currentBlock?.type = Material.AIR
         data.nextBlock?.type = Material.AIR
