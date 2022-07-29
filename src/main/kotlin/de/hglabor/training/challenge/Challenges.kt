@@ -712,7 +712,7 @@ class ParkourChallenge : CuboidChallenge() {
         val timeNeeded = System.currentTimeMillis() - data.startTime!!
         player.sendMessage(literalText(PREFIX) {
             text(" You made ") { color = KColors.GREEN }
-            text("${data.jumpCount} jumps") { color = KColors.GOLD }
+            text("${data.jumpCount} ${ if (data.jumpCount == 1) "jump" else "jumps"}") { color = KColors.GOLD }
             text(" in ") { color = KColors.GREEN }
             text("${timeNeeded/1000F}s") { color = KColors.WHITE }
             text(".") { color = KColors.WHITE }
