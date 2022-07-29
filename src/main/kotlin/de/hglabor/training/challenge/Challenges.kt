@@ -227,7 +227,7 @@ class Damager(
         super.start()
 
         val holoLoc = cuboidRegion.center.location().addY(if(this.name.equals("lava", true)) 7 else 0)
-        hologram = hologram(holoLoc, "$color$displayName", "Damage: ${KColors.GOLD}${damage/2} ${KColors.RED}\u2764", "Period: ${KColors.GOLD}$period", world = world)
+        hologram = hologram(holoLoc, text("$color$displayName"), text("Damage: ${KColors.GOLD}${damage/2} ${KColors.RED}\u2764"), text("Period: ${KColors.GOLD}$period"), world = world)
         task = task(period = period) {
             if(it.isCancelled) return@task
             players {
@@ -420,7 +420,7 @@ class AimTraining : CuboidChallenge() {
         super.start()
 
         val holoLoc = cuboidRegion.center.location().addY(2)
-        hologram = hologram(holoLoc, "$color$displayName", "Duration: ${KColors.GOLD}64 shots", world = world)
+        hologram = hologram(holoLoc, text("$color$displayName"), text("Duration: ${KColors.GOLD}64 shots"), world = world)
         task = task(
             period = 20
         ) {
@@ -529,7 +529,7 @@ class CraftingChallenge : CuboidChallenge() {
         super.start()
 
         val holoLoc = cuboidRegion.center.location().addY(2)
-        hologram = hologram(holoLoc, "$color$displayName", world = world)
+        hologram = hologram(holoLoc, text("$color$displayName"), world = world)
     }
 
     @Transient private val duration: Int = 20
@@ -550,7 +550,7 @@ class CraftingChallenge : CuboidChallenge() {
                     player.sendMessage("$PREFIX ${KColors.YELLOW}Next item: ${KColors.GOLD}${item.name}")
                     player.title(text("§6Crafting"), text("§cCraft (a) §b${item.name}"), 1.seconds.toJavaDuration(), 2.seconds.toJavaDuration(), 1.seconds.toJavaDuration())
                     repeat(9) { i ->
-                        player.inventory.setItem(i, namedItem(item, "${KColors.AQUA}${item.name}"))
+                        player.inventory.setItem(i, namedItem(item, text("${KColors.AQUA}${item.name}")))
                     }
                 }
                 5L -> {

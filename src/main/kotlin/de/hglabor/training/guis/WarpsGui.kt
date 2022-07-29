@@ -16,11 +16,11 @@ import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
-val DAMAGER = namedItem(Material.STONE_SWORD, "${KColors.ORANGERED}Damager")
-val MLG = namedItem(Material.WATER_BUCKET, "${KColors.AQUA}Mlg")
-val AIM_TRAINING = namedItem(Material.BOW, "${KColors.WHITE}Aim Training")
-val CRAFTING = namedItem(Material.CRAFTING_TABLE, "${KColors.SADDLEBROWN}Crafting")
-val PARKOUR = namedItem(Material.DIAMOND_BOOTS, "${KColors.BLUE}Jump And Run")
+val DAMAGER = namedItem(Material.STONE_SWORD, text("${KColors.ORANGERED}Damager"))
+val MLG = namedItem(Material.WATER_BUCKET, text("${KColors.AQUA}Mlg"))
+val AIM_TRAINING = namedItem(Material.BOW, text("${KColors.WHITE}Aim Training"))
+val CRAFTING = namedItem(Material.CRAFTING_TABLE, text("${KColors.SADDLEBROWN}Crafting"))
+val PARKOUR = namedItem(Material.DIAMOND_BOOTS, text("${KColors.BLUE}Jump And Run"))
 
 fun Player.openWarpsGUI() = openGUI(kSpigotGUI(GUIType.THREE_BY_NINE) {
     title = text("${KColors.AQUA}Warps")
