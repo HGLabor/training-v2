@@ -1,5 +1,5 @@
 group = "de.hglabor"
-version = "1.0.0-alpha"
+version = "1.0.0-alpha.2"
 val kspigot = "1.19.0"
 val kutils = "1.0.0-alpha"
 val kotlinxSerializationJson = "1.4.0-RC"
@@ -23,7 +23,7 @@ bukkit {
 repositories {
     mavenLocal()
     mavenCentral()
-    maven("https://repo.cloudnetservice.eu/repository/snapshots/") // CloudNet
+    maven("https://s01.oss.sonatype.org/content/repositories/snapshots/")
     maven("https://maven.enginehub.org/repo/")
 }
 
@@ -33,8 +33,9 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:$kotlinxSerializationJson")
     implementation("de.hglabor.utils:kutils:$kutils")
     compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.3.0-SNAPSHOT")
-    compileOnly("de.dytanic.cloudnet", "cloudnet-bridge", "3.5.0-SNAPSHOT")
-    compileOnly("de.dytanic.cloudnet", "cloudnet-wrapper-jvm", "3.5.0-SNAPSHOT")
+    compileOnly("eu.cloudnetservice.cloudnet:driver:4.0.0-SNAPSHOT")
+    compileOnly("eu.cloudnetservice.cloudnet:wrapper-jvm:4.0.0-SNAPSHOT")
+    compileOnly("eu.cloudnetservice.cloudnet:bridge:4.0.0-SNAPSHOT")
 }
 
 tasks {

@@ -1,15 +1,15 @@
 package de.hglabor.training
 
-import de.dytanic.cloudnet.driver.CloudNetDriver
-import de.dytanic.cloudnet.ext.bridge.player.IPlayerManager
 import de.hglabor.training.challenge.challenge
 import de.hglabor.training.events.updateChallengeIfSurvival
 import de.hglabor.training.guis.openWarpsGUI
 import de.hglabor.training.main.PREFIX
 import de.hglabor.utils.kutils.*
+import eu.cloudnetservice.driver.CloudNetDriver
 import net.axay.kspigot.chat.KColors
 import net.axay.kspigot.event.listen
 import net.axay.kspigot.extensions.bukkit.feedSaturate
+import net.axay.kspigot.extensions.bukkit.sendToServer
 import net.kyori.adventure.text.Component.text
 import org.bukkit.ChatColor
 import org.bukkit.GameMode
@@ -28,8 +28,6 @@ val SETTINGS = namedItem(Material.COMPARATOR,text("${KColors.GRAY}${KColors.BOLD
 
 val WARP_ITEMS =           listOf(WARPS, HUB, RESPAWN_ANCHOR, SETTINGS)
 val WARP_ITEM_LOCATIONS =  listOf(0,     7,   8,              17)
-
-private val playerManager = CloudNetDriver.getInstance().servicesRegistry.getFirstService(IPlayerManager::class.java)
 
 fun Player.defaultInv() {
     closeAndClearInv()
@@ -64,7 +62,10 @@ fun itemsListener() {
         with (player) {
             when (item) {
                 WARPS -> if (isRightClick) openWarpsGUI()
-                HUB -> if (isRightClick) playerManager.getPlayerExecutor(uniqueId).connectToFallback()
+                HUB -> if (isRightClick) {
+                    val lobbys = CloudNetDriver.instance<CloudNetDriver>().cloudServiceProvider().servicesByGroup("lobby")
+                    sendToServer(lobbys.random().name())
+                }
                 RESPAWN_ANCHOR -> {
                     if (isRightClick) {
                         setBedSpawnLocation(location.world.spawnLocation, true)
