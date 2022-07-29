@@ -28,13 +28,8 @@ fun commands() {
             }
             literal("save") {
                 runs {
-
-                }
-            }
-            literal("rewrite") {
-                runs {
                     Manager.configFile.writeText(json.encodeToString(challenges))
-                    player.sendMessage("$PREFIX Rewrote config.")
+                    player.sendMessage("$PREFIX Saved config.")
                 }
             }
         }
