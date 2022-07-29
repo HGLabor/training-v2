@@ -1,7 +1,7 @@
 group = "de.hglabor"
 version = "1.0.0-alpha.3"
 val kspigot = "1.19.0"
-val kutils = "1.0.0-alpha"
+val kutils = "1.0.0-alpha.2"
 val kotlinxSerializationJson = "1.4.0-RC"
 
 plugins {
