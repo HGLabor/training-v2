@@ -226,7 +226,7 @@ class Damager(
     override fun start() {
         super.start()
 
-        val holoLoc = cuboidRegion.center.location().addY(if(this.name.equals("lava", true)) 7 else 0)
+        val holoLoc = cuboidRegion.center.location().add(0.5, if(this.name.equals("lava", true)) 7.0 else 0.0, 0.5)
         hologram = hologram(
             holoLoc,
             literalText(displayName) { color = this@Damager.color },
@@ -431,7 +431,7 @@ class AimTraining : CuboidChallenge() {
     override fun start() {
         super.start()
 
-        val holoLoc = cuboidRegion.center.location().addY(2)
+        val holoLoc = cuboidRegion.center.location().add(0.5, 2.0, 0.5)
         hologram = hologram(
             holoLoc,
             literalText(displayName) { color = this@AimTraining.color },
@@ -554,7 +554,7 @@ class CraftingChallenge : CuboidChallenge() {
     override fun start() {
         super.start()
 
-        val holoLoc = cuboidRegion.center.location().addY(2)
+        val holoLoc = cuboidRegion.center.location().add(0.5, 2.0, 0.5)
         hologram = hologram(holoLoc, literalText(displayName) { color = this@CraftingChallenge.color }, world = world)
     }
 
