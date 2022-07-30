@@ -1,5 +1,5 @@
 group = "de.hglabor"
-version = "1.0.0-alpha.3"
+version = "1.0.0-alpha.4"
 val kspigot = "1.19.0"
 val kutils = "1.0.0-alpha.2"
 val kotlinxSerializationJson = "1.4.0-RC"
