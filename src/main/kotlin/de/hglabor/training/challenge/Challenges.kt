@@ -444,8 +444,11 @@ class AimTraining : CuboidChallenge() {
             period = 20
         ) {
             for (player in chickens.keys) {
-                for (otherPlayers in net.axay.kspigot.extensions.onlinePlayers.stream().filter { it != player }.toList()) {
-                    (otherPlayers as CraftPlayer).handle.connection.send(ClientboundRemoveEntitiesPacket(chickens[player]?.entityId ?: continue))
+                // Remove chicken for all players except the "chicken owner"
+                onlinePlayers {
+                    if (uniqueId != player.uniqueId) chickens[player]?.let {
+                        (this as CraftPlayer).handle.connection.send(ClientboundRemoveEntitiesPacket(it.entityId))
+                    }
                 }
             }
         }
@@ -471,8 +474,8 @@ class AimTraining : CuboidChallenge() {
         chicken.isGlowing = true
         chicken.customName(literalText("chicken man"))
 
-        for (otherPlayer in net.axay.kspigot.extensions.onlinePlayers.filter { it != player }) {
-            (otherPlayer as CraftPlayer).handle.connection.send(ClientboundRemoveEntitiesPacket(chicken.entityId))
+        onlinePlayers {
+            if (uniqueId != player.uniqueId) (this as CraftPlayer).handle.connection.send(ClientboundRemoveEntitiesPacket(chicken.entityId))
         }
         player.playSound(Sound.ENTITY_PLAYER_LEVELUP, pitch = 0)
         chickens[player] = chicken
