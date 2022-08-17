@@ -1,8 +1,5 @@
 group = "de.hglabor"
-version = "1.0.0-alpha.4"
-val kspigot = "1.19.0"
-val kutils = "1.0.0-alpha.2"
-val kotlinxSerializationJson = "1.4.0-RC"
+version = "1.0.0-alpha.5"
 
 plugins {
     kotlin("jvm") version "1.7.10"
@@ -28,10 +25,10 @@ repositories {
 }
 
 dependencies {
-    paperDevBundle("1.19.1-R0.1-SNAPSHOT")
-    implementation("net.axay:kspigot:$kspigot")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:$kotlinxSerializationJson")
-    implementation("de.hglabor.utils:kutils:$kutils")
+    paperDevBundle("1.19.2-R0.1-SNAPSHOT")
+    implementation("net.axay:kspigot:1.19.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.0-RC")
+    implementation("de.hglabor.utils:kutils:1.0.0-beta")
     compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.3.0-SNAPSHOT")
     compileOnly("eu.cloudnetservice.cloudnet:driver:4.0.0-SNAPSHOT")
     compileOnly("eu.cloudnetservice.cloudnet:wrapper-jvm:4.0.0-SNAPSHOT")
